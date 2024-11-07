@@ -1,4 +1,3 @@
 psim - simple particle simulator using verlet integration
 ---------------------------------------------------------
-TODO:
-- fix strange collision behavior (sometimes particles overlap each other);
+(Python version)
