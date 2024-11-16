@@ -15,15 +15,15 @@ press 'p' to pause the simulation
 left click to add a particle""";
 
 if __name__ == "__main__":
+	if len(sys.argv)>1:
+		if sys.argv[1]=="-h":
+			print(USAGE_MSG);
+			exit();
+
 	n_par = int(sys.argv[1]) if len(sys.argv)>1 else DEFAULT_N;
 	max_radius = int(sys.argv[2]) if len(sys.argv)>2 else DEFAULT_MR;
 
 	win = Window("Particle Sandbox", W, H, n_par, max_radius);
 
-	if len(sys.argv)>1:
-		if sys.argv[1]=="-h":
-			print(USAGE_MSG);
-			exit();
-	
 	win.bgcolor = (0x0, 0x28, 0x3c);
 	win.loop();
