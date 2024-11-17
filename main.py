@@ -2,7 +2,7 @@
 from psim.window import Window
 import sys
 
-W = 800;
+W = 1000;
 H = 600;
 DEFAULT_N  = 5;
 DEFAULT_MR = 50;
