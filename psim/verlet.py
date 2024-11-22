@@ -15,6 +15,7 @@ class VerletObject:
 		self.radius = 0;
 		self.color = (0,0,0);
 		self.id = 0;
+		self.mass = 1;
 
 
 class Verlet:
@@ -30,6 +31,14 @@ class Verlet:
 		self.w = 950;
 		self.h = 450;
 
+	def get_velocity(self, idx):
+		return self.objs[idx].vel
+	
+	def get_mass(self, idx):
+		return self.objs[idx].mass
+	def set_mass(self, idx, new_mass):
+		if (new_mass > 0.5 and new_mass < 10):
+			self.objs[idx].mass = new_mass
 
 	def create_holes(self):
 		self.holes = [
