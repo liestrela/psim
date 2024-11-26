@@ -26,4 +26,14 @@ if __name__ == "__main__":
 	win = Window("Particle Sandbox", W, H, n_par, max_radius);
 
 	win.bgcolor = (0x0, 0x28, 0x3c);
-	win.loop();
+	tela = "menu"
+	while True:
+		if tela == "menu":
+			tela = win.menu()
+		elif tela == "jogo":
+			tela = win.loop()
+		elif tela == "q":
+			break
+		else:
+			raise Exception(f"Erro: tela desconhecida/indisponível \"{tela}\".")
+			break
