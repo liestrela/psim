@@ -44,17 +44,21 @@ Quando duas bolas colidem, elas trocam de momento entre si. O ângulo da colisã
 ## Integração de Verlet
 Para calcular a posição das bolas na mesa a cada instante de simulação, utilizamos um método numérico para resolver equações que envolvem a posição e a aceleração atual de cada corpo. Este método consiste em aproximar o resultado da chamada "equação diferencial" da posição do corpo. Essa equação pode ser resolvida por meios analíticos, ou numéricos, que são rapidamente computáveis e dão resultados aproximados.
 
-O método de integração de Verlet aplicado no nosso problema, consiste do seguinte:
-A posição da bola em um instante $t + \Delta t$ é calculada com base em sua posição atual e passada, usando a fórmula:
+Utilizamos o método de integração de Verlet no nosso problema, cuja ideia consiste do seguinte:
+Podemos aproximar a posição de um objeto em função das suas derivadas usando a Expansão de Taylor em torno de $t+\Delta t$:
 
-$\vec{r}(t + \Delta t) = 2\vec{r}(t) - \vec{r}(t - \Delta t) + \vec{a}(t)(\Delta t)^2$,
+$\vec{r}(t+\Delta t) = \vec{r}(t) + \vec{v}(t)\Delta t + \frac{1}{2}\vec{a}(t)\Delta t^2 + \frac{1}{6}\vec{b}(t)\Delta t^3 + \mathcal{O}(\Delta t^4)$.
 
-onde:
-- $\vec{r}(t)$ é a posição atual da bola;
-- $\vec{r}(t - \Delta t)$ é a posição anterior da bola;
-- $\vec{a}(t)$ é a aceleração atual;
-- $\Delta t$ é o intervalo de tempo entre os cálculos.
+Onde $v$, $a$, e $b$ são, resepctivamente, a primeira, segunda e terceira derivada da posição em relação ao tempo, e o termo $\mathcal{O}(\Delta t^4)$ é o termo de ordem $4$ restante da expansão de Taylor.
+
+Obtendo agora, de maneira análoga, uma estimativa para a posição num tempo $t-\Delta t$, temos
+
+$\vec{r}(t-\Delta t) = \vec{r} - \vec{v}(t)\Delta t + \frac{1}{2}\vec{a}(t)\Delta t^2 - \frac{1}{6}\vec{b}(t)\Delta t^3 + \mathcal{O}(\Delta t^4)$.
+
+Resolvendo o sistema composto por estas duas equações para $\vec{r}(t+\Delta t)$, obtemos que
+
+$\vec{r}(t+\Delta t) = 2\vec{r}(t)-\vec{r}(t-\Delta t)+\vec{a}\Delta t^2 + \mathcal{O}(\Delta t^4)$,
+
+o que significa que podemos estimar a posição apenas sabendo a posição anterior, a posição atual e a aceleração, com um erro de ordem $4$.
 
 Existem métodos alternativos ao Verlet para calcular os mesmos resultados, como por exemplo, o método de Euler. Porém, o Verlet é particularmente eficaz para nós porque ele evita o acúmulo de erros numéricos e não exige o cálculo explícito das velocidades, o que o torna ideal para simulações como a nossa.
-
-*adicionar visualização do método de Verlet*
