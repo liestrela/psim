@@ -60,7 +60,27 @@ class Verlet:
 		self.ballcolor = (255, 0, 0)
 		self.done = False;
 		self.game_over = False;
-	
+
+	def reset(self):
+		self.score1 = 0;
+		self.score2 = 0;
+		self.ball = 1;
+		self.turn = 1;
+		self.hit = False;
+		self.free = False;
+		self.any = False;
+		self.psquare = (1250, 10, 50, 50)
+		self.ballcolor = (255, 0, 0)
+		self.done = False;
+		self.game_over = False;
+		for obj in self.objs:
+				obj.prev.y = obj.orpos[1];
+				obj.curr.y = obj.orpos[1];
+				obj.prev.x = obj.orpos[0];
+				obj.curr.x = obj.orpos[0];
+				obj.out = False;
+
+
 	def set_bounds(self, w, h):
 		self.w = 950;
 		self.h = 450;
@@ -76,22 +96,22 @@ class Verlet:
 
 	def create_holes(self):
 		self.holes = [
-			(11, 11 , 22),
-			(939, 11, 22),
-			(11, 439, 22),
-			(939, 439, 22),
-			(475, 11, 22),
-			(475, 439, 22)
+			(11, 11 , 30),
+			(939, 11, 30),
+			(11, 439, 30),
+			(939, 439, 30),
+			(475, 11, 30),
+			(475, 439, 30)
 		];
 
 	def create_walls(self):
 		self.walls = [
-			(33, 8 , 420,7 ),
-			(497, 8, 421,7 ),
-			(0, 32, 7,385 ),
-			(943, 32, 7,385 ),
-			(33, 435, 420, 7),
-			(497, 435, 421,7)
+			(40, 10 , 410,7 ),
+			(497, 10, 410,7 ),
+			(3, 40, 7,368 ),
+			(934, 40, 7,368),
+			(40, 430, 410, 7),
+			(497, 430, 410,7)
 		];	
 		
 	def create_objs(self):
@@ -108,18 +128,24 @@ class Verlet:
 			self.objs.append(vo);
 
 	def hit_obj(self, pos, force):
+
 		if(not(self.free)):
 			self.hit=False
 		self.done=True
-		if(not(self.any)):
-			self.free=False
+
 		all_stopped=True;
 		for obj in self.objs:
 			if(abs(obj.curr.x-obj.prev.x)>0 or abs(obj.curr.y-obj.prev.y)>0 ):
 				all_stopped=False;
-				break;
+				break;		
+
+		if(self.free and self.any): 
+			self.any = False;
+		else:
+			self.free=False
+
 		if(all_stopped):
-			if(self.free):
+			if(self.any):
 				self.done = False;
 			ye=pos[1]
 			xe=pos[0]
@@ -138,6 +164,8 @@ class Verlet:
 			velocity = (1.5*force*(distx), 1.5*force*(disty));
 
 			self.objs[7].curr += velocity;
+
+
 			
 		self.update()
 
@@ -198,7 +226,7 @@ class Verlet:
 				break;
 
 		if(all_stopped):
-			if(not(self.free)):
+			if(not(self.any)):
 				if(not(self.hit)):
 					self.hit=True
 					if(self.turn==1):
@@ -215,8 +243,6 @@ class Verlet:
 					self.psquare = (1250, 10, 50, 50)
 					self.done = False
 
-			if(self.free and self.any): 
-				self.any = False;
 			if(self.ball>=8):
 				self.game_over=True
 		self.keep_inbounds();
@@ -279,7 +305,7 @@ class Verlet:
 				other.prev = other.curr - new_other_vel;
 
 	def keep_inbounds(self):
-		ground_res = 0.9;
+		ground_res = 0.5;
 
 		for obj in self.objs:
 			if(obj.curr.y<500):
@@ -301,33 +327,33 @@ class Verlet:
 					obj.curr.y = obj.radius;
 					obj.prev.y = obj.curr.y+vel.y*ground_res;
 
-				if(obj.curr.x-obj.radius>33 and obj.curr.x-obj.radius<453):
-					if obj.curr.y-obj.radius<8:
-						obj.curr.y = 8+obj.radius;
+				if(obj.curr.x-obj.radius>10 and obj.curr.x-obj.radius<450):
+					if obj.curr.y-obj.radius<17:
+						obj.curr.y = 17+obj.radius;
 						obj.prev.y = obj.curr.y+vel.y*ground_res;
 
-					if obj.curr.y+obj.radius>435:
-						obj.curr.y = 435-obj.radius;
-						obj.prev.y = obj.curr.y+vel.y*ground_res;
-
-
-				if(obj.curr.x-obj.radius>497 and obj.curr.x-obj.radius<918):
-					if obj.curr.y-obj.radius<8:
-						obj.curr.y = 8+obj.radius;
-						obj.prev.y = obj.curr.y+vel.y*ground_res;
-
-					if obj.curr.y+obj.radius>435:
-						obj.curr.y = 435-obj.radius;
+					if obj.curr.y+obj.radius>430:
+						obj.curr.y = 430-obj.radius;
 						obj.prev.y = obj.curr.y+vel.y*ground_res;
 
 
-				if(obj.curr.y-obj.radius>32 and obj.curr.y-obj.radius<417):
-					if obj.curr.x-obj.radius<7:
-						obj.curr.x = 7+obj.radius;
+				if(obj.curr.x-obj.radius>497 and obj.curr.x-obj.radius<908):
+					if obj.curr.y-obj.radius<17:
+						obj.curr.y = 17+obj.radius;
+						obj.prev.y = obj.curr.y+vel.y*ground_res;
+
+					if obj.curr.y+obj.radius>430:
+						obj.curr.y = 430-obj.radius;
+						obj.prev.y = obj.curr.y+vel.y*ground_res;
+
+
+				if(obj.curr.y-obj.radius>40 and obj.curr.y-obj.radius<408):
+					if obj.curr.x-obj.radius<10:
+						obj.curr.x = 10+obj.radius;
 						obj.prev.x = obj.curr.x+vel.x*ground_res;
 
-					if obj.curr.x+obj.radius>943:
-						obj.curr.x = 943-obj.radius;
+					if obj.curr.x+obj.radius>932:
+						obj.curr.x = 932-obj.radius;
 						obj.prev.x = obj.curr.x+vel.x*ground_res;
 
 
@@ -335,27 +361,8 @@ class Verlet:
 		if(obj.out==True):
 			return
 		out=False
-		if(obj.curr.x-obj.radius>453 and obj.curr.x-obj.radius<497):
-			if obj.curr.y-obj.radius<4:
-				out=True
-
-			if obj.curr.y+obj.radius>431:
-				out=True
-
-
-		if(obj.curr.y-obj.radius<8 or obj.curr.y-obj.radius>417):
-			if obj.curr.x-obj.radius<3:
-				out=True
-
-			if obj.curr.x+obj.radius>947:
-				out=True
-
-		if(obj.curr.x-obj.radius<33 or obj.curr.x-obj.radius>918):
-			if obj.curr.y-obj.radius<4:
-				out=True
-
-			if obj.curr.y+obj.radius>431:
-				out=True
+		if((obj.curr.x-obj.radius>895 or obj.curr.x-obj.radius<25) and (obj.curr.y-obj.radius<33 or obj.curr.y-obj.radius>395) or obj.curr.y-obj.radius<17 or obj.curr.y-obj.radius>408):
+			out=True
 
 		if (out):
 			if(obj.id!=self.ball and (not(self.free)) or obj.id==8):
@@ -366,14 +373,12 @@ class Verlet:
 				if(self.turn==1):
 					if(self.score1>0):
 						self.score1-=1;
-					self.turn=2
-					self.psquare = (1250, 75, 50, 50)
 				else:
 					if(self.score2>0):
 						self.score2-=1;	
-					self.turn=1
-					self.psquare = (1250, 10, 50, 50)
-				self.done = False;				
+				self.done = True;	
+				self.free = False;
+				self.any = False;			
 			
 			else:
 				self.free = True
@@ -389,4 +394,8 @@ class Verlet:
 				obj.out=True
 				if(obj.id==self.ball):
 					self.ball+=1
-					self.ballcolor=self.objs[obj.id].color
+					id_temp=obj.id;
+					while(self.objs[id_temp].out==True):
+						id_temp=id_temp+1
+						self.ball+=1
+					self.ballcolor=self.objs[id_temp].color
