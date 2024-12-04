@@ -49,27 +49,13 @@ class Window:
 			    	vencedor=0
 			    	score = self.vl.score1
 
-			    # Cria a superfície de texto com a pontuação final
-				# do jogador
+			    # Cria a superfície de texto com a pontuação final do jogador
 			    if(vencedor==0):
-			    	game_over_surface = fonte1.render('Empatou no score ' + str(score), True, (255,0,0))
-			    	game_over_reset = fonte1.render('Press R to play again', True, (255,0,0))
+			    	self.ren.render_text('Empatou no score ' + str(score), fonte1  , (255,0,0), (self.w / 2, self.h / 4))
 			    else:
-			    	game_over_surface = fonte1.render('O jogador ' + str(vencedor) + ' ganhou com score ' + str(score), True, (255,0,0))
-			    	game_over_reset = fonte1.render('Press R to play again', True, (255,0,0))
-			    
-			    # Obtém o retângulo para posicionar o texto na tela
-			    game_over_rect = game_over_surface.get_rect()
-			    reset_rect = game_over_reset.get_rect()
-			    
-			    # Define a posição do texto para o centro superior da tela
-			    game_over_rect.midtop = (self.w / 2, self.h / 4)
-			    # E logo abaixo
-			    reset_rect.midtop = (self.w / 2, self.h / 4 + 75)
-			    
-			    # Exibe o texto de fim de jogo na janela
-			    surf.blit(game_over_surface, game_over_rect)
-			    surf.blit(game_over_reset, reset_rect)
+			    	self.ren.render_text('O jogador ' + str(vencedor) + ' ganhou com score ' + str(score),  fonte1,(255,0,0), (self.w / 2, self.h / 4))
+			    self.ren.render_text('Pressione R para jogar novamente', fonte1, (255,0,0), (self.w / 2, self.h / 4 + 75))
+
 			    pg.display.flip()
 			    
 			    while dead:
@@ -77,9 +63,11 @@ class Window:
 			                    if (event.type == QUIT): # Verifica se foi clicado em fechar janela
 			                        brk = True
 			                        dead=False
+			                        self.vl.reset()
 			                    if (event.type == KEYDOWN):
 			                        if event.key == K_r: # Verifica se a tecla R foi pressionada
 			                            dead=False
+			                            self.vl.reset()
 
 			if pg.key.get_pressed()[pg.K_s]:
 				if(force>1):
@@ -125,29 +113,32 @@ class Window:
 			surf.fill(self.bgcolor);
 
 			# Draws force indicator
-			pg.draw.rect(surf, (0, 0, 0), (445, 495, 460, 60))
-			pg.draw.rect(surf, (150, 150, 150), (450, 500, 450, 50))
-			pg.draw.rect(surf, (2.25*abs(force-20)*force, 10.2*force*abs(force-10), 255-255*math.exp(force/10-1)), (450, 500, 45*force, 50))
-
+			self.ren.render_rectangle(445, 495, 460, 60, (0, 0, 0))
+			self.ren.render_rectangle(450, 500, 450, 50, (150, 150, 150)) 
+			self.ren.render_rectangle(450, 500, 45*force, 50, (2.25*abs(force-20)*force, 10.2*force*abs(force-10), 255-255*math.exp(force/10-1)))  
+			
 			# Draws momentum indicator
-			pg.draw.rect(surf, (0, 0, 0), (45, 495, 360, 60))
-			pg.draw.rect(surf, (150, 150, 150), (50, 500, 350, 50))
-			pg.draw.rect(surf, (60, 46, 150), (50, 500, 350*momentum/25, 50))
+			self.ren.render_rectangle(45, 495, 360, 60, (0, 0, 0))
+			self.ren.render_rectangle(50, 500, 350, 50, (150, 150, 150))
+			self.ren.render_rectangle(50, 500, 350*momentum/25, 50, (60, 46, 150))
 
 			self.ren.render_text(str(round(momentum,3)),fonte1,(0,0,0),(60,525), 'left')
 
 
-			pg.draw.line(surf, (255, 255, 255), (0, 450), (950, 450), 5)
-			pg.draw.line(surf, (255, 255, 255), (950, 0), (950, 457), 5)
-
+			# Parte visual da mesa
 			pg.draw.line(surf, (255, 255, 255), (750, 0), (750, 450), 5)
 			pg.draw.arc(surf, (255, 255, 255), (675, 160, 150, 140), -math.pi/2, math.pi/2, 5)
-
-			for hole in self.vl.holes:
-				self.ren.render_circle(hole[0], hole[1], hole[2], (0,0,0));			
+			pg.draw.line(surf, (100, 100, 100), (0, 0), (0, 450), 10)
+			pg.draw.line(surf, (100, 100, 100), (0, 0), (950, 0), 18)
+			pg.draw.line(surf, (100, 100, 100), (0, 450), (950, 445), 28)
+			pg.draw.line(surf, (100, 100, 100), (950, 0), (950, 450), 30)
+		
 			for wall in self.vl.walls:
 				self.ren.render_rectangle(wall[0], wall[1], wall[2], wall[3],(255,255,0));
-				
+
+			for hole in self.vl.holes:
+				self.ren.render_circle(hole[0], hole[1], hole[2], (0,0,0));		
+
 			self.clk.tick(60);
 
 			self.ren.render_rectangle(1000, 200, 50, 50, self.vl.ballcolor);
@@ -159,29 +150,28 @@ class Window:
 			s1 = self.vl.score1
 			s2 = self.vl.score2
 
-			# Cria a superfície do texto que exibe a pontuação
+			# Cria a superfície do texto que exibe a pontuação do jogador 1
 			score1_surface = self.score_font.render('Score 1: ' + str(s1), True, (0,0,0))
-		    
 		    # Obtém o retângulo para posicionar o texto na tela
 			score1_rect = score1_surface.get_rect()
-
 			score1_rect.midtop = (1100 ,10)
-		    
+			
 		    # Exibe o texto na janela do jogo
 			pg.draw.rect(surf, (255, 127, 0), score1_rect)
-			surf.blit(score1_surface, score1_rect)
+			self.ren.render_text('Score 1: ' + str(s1), self.score_font, (0,0,0), (1100 ,30))
 
-			# Cria a superfície do texto que exibe a pontuação
+
+			# Cria a superfície do texto que exibe a pontuação do jogador 2
 			score2_surface = self.score_font.render('Score 2: ' + str(s2), True, (0,0,0))
-		    
 		    # Obtém o retângulo para posicionar o texto na tela
 			score2_rect = score2_surface.get_rect()
-
 			score2_rect.midtop = (1100 ,75)
-		    
-		    # Exibe o texto na janela do jogo
+			
+			# Exibe o texto na janela do jogo
 			pg.draw.rect(surf, (0, 0, 255), score2_rect)
-			surf.blit(score2_surface, score2_rect)
+			self.ren.render_text('Score 2: ' + str(s2), self.score_font, (0,0,0), (1100 ,100))
+
+
 
 			for vo in self.vl.objs:
 				self.ren.render_circle(vo.curr.x, vo.curr.y, vo.radius, vo.color);
@@ -215,16 +205,20 @@ class Window:
 		fonte1 = pg.font.SysFont("ubuntumono", 30, bold=True)
 		
 		while not brk:
-			hoverBtn1 = (pg.mouse.get_pos()[0] > 200 and pg.mouse.get_pos()[0] < 600 and pg.mouse.get_pos()[1] > 80 and pg.mouse.get_pos()[1] < 160)
-			hoverBtn2 = (pg.mouse.get_pos()[0] > 200 and pg.mouse.get_pos()[0] < 600 and pg.mouse.get_pos()[1] > 240 and pg.mouse.get_pos()[1] < 320)
-			hoverBtn3 = (pg.mouse.get_pos()[0] > 200 and pg.mouse.get_pos()[0] < 600 and pg.mouse.get_pos()[1] > 400 and pg.mouse.get_pos()[1] < 480)
+			hoverBtn1 = (pg.mouse.get_pos()[0] > btn_pos[0] and pg.mouse.get_pos()[0] < btn_pos[0]+btn_dim[0] and pg.mouse.get_pos()[1] > btn_pos[1] and pg.mouse.get_pos()[1] <  btn_pos[1]+btn_dim[1])
+			hoverBtn2 = (pg.mouse.get_pos()[0] > btn_pos[0] and pg.mouse.get_pos()[0] < btn_pos[0]+btn_dim[0] and pg.mouse.get_pos()[1] > btn_pos[1]*3 and pg.mouse.get_pos()[1] < btn_pos[1]*3+btn_dim[1])
+			hoverBtn3 = (pg.mouse.get_pos()[0] > btn_pos[0] and pg.mouse.get_pos()[0] <  btn_pos[0]+btn_dim[0] and pg.mouse.get_pos()[1] > btn_pos[1]*5 and pg.mouse.get_pos()[1] < btn_pos[1]*5+btn_dim[1])
 			for e in pg.event.get():
 				if e.type == pg.QUIT:
-					brk = True;
+					prox_tela = "q"
+					brk = True
+					break
 				if e.type == pg.KEYDOWN:
 					key = pg.key.name(e.key);
 					if key=='q':
+						prox_tela = "q"
 						brk = True
+						break
 				if e.type == pg.MOUSEBUTTONDOWN:
 					if hoverBtn1:
 						prox_tela = "jogo"
