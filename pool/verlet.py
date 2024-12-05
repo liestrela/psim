@@ -78,9 +78,6 @@ class Verlet:
 		else:
 			obj.acc[0] = 0
 
-		print(obj.vel)
-		print(obj.acc)
-
 	
 	def update(self):
 		for obj in self.objs:
