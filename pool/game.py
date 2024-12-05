@@ -1,5 +1,6 @@
 # Pool game
 from pool.verlet import VerletObject
+from math import exp, pi
 import pygame as pg
 
 balls_pos = [
@@ -53,6 +54,7 @@ class Game:
 		self.score2 = 0;
 		self.score_font = pg.font.SysFont(None, 50);
 		self.aiming = False;
+		self.cue_force = 5;
 
 		# Create game balls
 		for i in range(0, 8):
@@ -66,6 +68,25 @@ class Game:
 
 			self.vl.objs.append(vo);
 
+	def increase_force(self):
+		if (self.cue_force<10):
+			self.cue_force += 0.25;
+
+	def decrease_force(self):
+		if (self.cue_force>1):
+			self.cue_force -= 0.25;
+
+	def draw_table(self):
+		surf = self.ren.surf;
+
+		pg.draw.line(surf, (255, 255, 255), (750, 0), (750, 450), 5);
+		pg.draw.arc(surf, (255, 255, 255), (675, 160, 150, 140),
+		           -pi/2, pi/2, 5);
+		pg.draw.line(surf, (100, 100, 100), (0, 0), (0, 450), 10);
+		pg.draw.line(surf, (100, 100, 100), (0, 0), (950, 0), 18);
+		pg.draw.line(surf, (100, 100, 100), (0, 450), (950, 445), 28);
+		pg.draw.line(surf, (100, 100, 100), (950, 0), (950, 450), 30);
+
 	def draw_score(self):
 		self.ren.render_text("Score 1: " + str(self.score1),
 		                     self.score_font, (0, 0, 0),
@@ -74,8 +95,24 @@ class Game:
 		                     self.score_font, (0, 0, 0),
 							 (1200, 80), "right", "middle");
 
+	def draw_force_bar(self):
+		self.ren.render_rect(45, 495, 460, 60, (0, 0, 0));
+		self.ren.render_rect(50, 500, 450, 50, (150, 150, 150));
+		self.ren.render_rect(50, 500, 45*self.cue_force, 50,
+		                     (2.25*abs(self.cue_force-20)*
+							 self.cue_force,
+		                     10.2*self.cue_force*
+							 abs(self.cue_force-10),
+		                     255-255*exp(self.cue_force/10-1)));
+
+	def draw_hud(self):
+		self.draw_score();
+		self.draw_force_bar();
+
 	def tick(self):
 		balls = self.vl.objs;
+
+		self.draw_table();
 
 		# Rendering balls
 		for ball in balls:
@@ -92,10 +129,14 @@ class Game:
 			self.ren.render_circle(hole[0], hole[1], hole[2],
 			                       (0, 0, 0));
 		
+		# Parte visual da mesa
+
+
 		# Rendering cue
 		if self.aiming:
 			self.ren.render_cue(self.vl.objs[0].curr,
 			                    pg.mouse.get_pos(), 10,
 								self.vl.objs[0].radius);
-		self.draw_score();
+
+		self.draw_hud();
 		self.vl.update();
