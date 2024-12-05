@@ -17,20 +17,24 @@ class VerletObject:
 
 class Verlet:
 	def __init__(self, w, h):
-		self.w = w;
-		self.h = h;
+		self.w0 = 0;
+		self.h0 = 0;
+		self.w1 = w;
+		self.h1 = h;
 		self.max_radius = 0;
 		self.objs = [];
 	
-	def set_bounds(self, w, h):
-		self.w = w;
-		self.h = h;
+	def set_bounds(self, w0, w1, h0, h1):
+		self.w0 = w0;
+		self.w1 = w1;
+		self.h0 = h0;
+		self.h1 = h1;
 	
 	# create n random objects
 	def create_objs(self, n, radius):
 		for i in range(0, n):
 			vo = VerletObject();
-			start_y = randi(10, self.h-1);
+			start_y = randi(10, self.h1-1);
 
 			vo.id = i;
 			vo.prev.update((self.max_radius*1.5*(i+1)-randi(0,14),
@@ -155,18 +159,18 @@ class Verlet:
 		for obj in self.objs:
 			vel = obj.curr-obj.prev;
 
-			if obj.curr.y+obj.radius>self.h:
-				obj.curr.y = self.h-obj.radius;
+			if obj.curr.y+obj.radius>self.h1:
+				obj.curr.y = self.h1-obj.radius;
 				obj.prev.y = obj.curr.y+vel.y*ground_res;
 
-			if obj.curr.x-obj.radius<0:
+			if obj.curr.x-obj.radius<self.w0:
 				obj.curr.x = obj.radius;
 				obj.prev.x = obj.curr.x+vel.x;
 
-			if obj.curr.x+obj.radius>self.w:
-				obj.curr.x = self.w-obj.radius;
+			if obj.curr.x+obj.radius>self.w1:
+				obj.curr.x = self.w1-obj.radius;
 				obj.prev.x = obj.curr.x+vel.x;
 
-			if obj.curr.y-obj.radius<0:
-				obj.curr.y = obj.radius;
+			if obj.curr.y-obj.radius<self.h0:
+				obj.curr.y = self.h0+obj.radius;
 				obj.prev.y = obj.curr.y+vel.y;

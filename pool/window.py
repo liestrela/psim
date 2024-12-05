@@ -74,6 +74,7 @@ class Window:
 		brk = False;
 		pause = True;
 		surf = self.ren.surf;
+		menu_click = False;
 
 		while not brk:
 			# Force setup
@@ -85,12 +86,8 @@ class Window:
 			for e in pg.event.get():
 				if e.type == pg.MOUSEBUTTONDOWN:
 					if pause:
-						if self.buttons[0].hover:
-							if pause:
-								pg.display.set_caption(self.title);
+						menu_click = True;
 
-							pause = not pause;
-							continue;
 						if self.buttons[1].hover:
 							print("help");
 							continue;
@@ -98,12 +95,23 @@ class Window:
 							brk = True;
 							continue;
 					else:
+						menu_click = False;
 						self.game.aiming = True;
 
 				if e.type == pg.MOUSEBUTTONUP:
-					if not pause:
+					if not pause and not menu_click:
+						menu_click = not menu_click;
 						self.game.shoot_ball(10.0, pg.math.Vector2.normalize(e.pos - self.vl.objs[0].curr))
 						self.game.aiming = False;
+
+					if pause and menu_click:
+						menu_click = not menu_click;
+						if self.buttons[0].hover:
+							if pause:
+								pg.display.set_caption(self.title);
+
+							pause = not pause;
+							continue;
 
 				if e.type == pg.QUIT:
 					brk = True;

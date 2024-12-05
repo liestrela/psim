@@ -116,6 +116,7 @@ class Game:
 	def tick(self):
 		balls = self.vl.objs;
 
+		self.vl.set_bounds(0, 950, 5, 440);
 		self.draw_table();
 
 		# Rendering balls
@@ -128,9 +129,6 @@ class Game:
 			self.ren.render_circle(hole[0], hole[1], hole[2],
 								   (0, 0, 0));
 		
-		# Parte visual da mesa
-
-
 		# Rendering cue
 		if self.aiming:
 			self.ren.render_cue(self.vl.objs[0].curr,
