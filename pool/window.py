@@ -1,6 +1,6 @@
 from pool.renderer import Renderer
 from pool.verlet   import Verlet
-from pool.game     import Game
+from pool.game	   import Game
 import pygame as pg
 
 class Button:
@@ -18,9 +18,9 @@ class Button:
 		mouse_y = pg.mouse.get_pos()[1];
 
 		self.hover = mouse_x > self.pos[0] and \
-		             mouse_x < self.pos[0]+self.dim[0] and \
-		             mouse_y > self.pos[1] and \
-		             mouse_y < self.pos[1]+self.dim[1];
+					 mouse_x < self.pos[0]+self.dim[0] and \
+					 mouse_y > self.pos[1] and \
+					 mouse_y < self.pos[1]+self.dim[1];
 
 class Window:
 	def __init__(self, title, w, h):
@@ -44,11 +44,11 @@ class Window:
 
 		self.buttons = [
 			Button(0, "Jogar", (127, 200, 127), (200, 255, 200),
-			       (def_btn_x, def_btn_y), (400, self.h/7)),
+				(def_btn_x, def_btn_y), (400, self.h/7)),
 			Button(1, "Ajuda", (200, 127, 127), (255, 200, 200),
-			       (def_btn_x, 3*def_btn_y), (400, self.h/7)),
+				(def_btn_x, 3*def_btn_y), (400, self.h/7)),
 			Button(2, "Sair",  (127, 127, 200), (200, 200, 255),
-			       (def_btn_x, 5*def_btn_y), (400, self.h/7))
+				(def_btn_x, 5*def_btn_y), (400, self.h/7))
 		];
 		
 		self.btn_pos = [(self.w)/2-200, self.h/7];
@@ -63,7 +63,7 @@ class Window:
 			color = btn.color_hover if btn.hover else btn.color;
 
 			self.ren.render_rect(self.btn_pos[0],
-			                     (1+2*btn.idx)*self.btn_pos[1],
+								 (1+2*btn.idx)*self.btn_pos[1],
 								 self.btn_dim[0], self.btn_dim[1],
 								 color);
 			self.ren.render_text(btn.msg, self.fonts[0],
@@ -93,6 +93,7 @@ class Window:
 
 				if e.type == pg.MOUSEBUTTONUP:
 					if not pause:
+						self.game.shoot_ball(10.0, pg.math.Vector2.normalize(e.pos - self.vl.objs[0].curr))
 						self.game.aiming = False;
 
 				if e.type == pg.QUIT:

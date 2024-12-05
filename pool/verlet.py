@@ -1,7 +1,9 @@
 from pygame.math import Vector2 as Vec2
+import math
 from random import randint as randi
 
 GRAVITY = 0.3;
+ATRITO = 0.02;
 
 class VerletObject:
 	def __init__(self):
@@ -32,14 +34,14 @@ class Verlet:
 
 			vo.id = i;
 			vo.prev.update((self.max_radius*1.5*(i+1)-randi(0,14),
-			               start_y));
+						   start_y));
 			vo.curr.update((self.max_radius*1.5*(i+1), start_y,));
 
 			vo.acc.update(0, 0);
 			vo.radius = randi(2, radius);
 
 			vo.color = (randi(0, 0xff), randi(0, 0xff),
-			            randi(0, 0xff));
+						randi(0, 0xff));
 			
 			self.objs.append(vo);
 	
@@ -61,16 +63,34 @@ class Verlet:
 	def set_max_radius(self, max_radius):
 		self.max_radius = max_radius;
 
-	def apply_forces(self):
-		for obj in self.objs: obj.acc.y = 0;
+	def apply_forces(self, obj):
+		vy=obj.curr[1]-obj.prev[1]
+		vx=obj.curr[0]-obj.prev[0]
+
+		theta_radians = math.atan2(abs(vy), abs(vx))
+
+		if(abs(vy) > 0):
+			obj.acc[1] = -((obj.vel[1])/abs(vy))*ATRITO*math.sin(theta_radians);
+		else:
+			obj.acc[1] = 0
+		if(abs(vx) > 0):
+			obj.acc[0] = -((obj.vel[0])/abs(vx))*ATRITO*math.cos(theta_radians);
+		else:
+			obj.acc[0] = 0
+
+		print(obj.vel)
+		print(obj.acc)
+
 	
 	def update(self):
-		self.apply_forces();
+		for obj in self.objs:
+			self.apply_forces(obj);
 
 		for obj in self.objs:
 			self.check_collisions(obj);
 
 			velocity = (obj.curr-obj.prev)+obj.acc;
+			obj.vel = velocity
 
 			obj.prev.x = obj.curr.x;
 			obj.prev.y = obj.curr.y;
