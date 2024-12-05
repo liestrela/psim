@@ -1,4 +1,4 @@
-# Sinuca
+# psim - pool simulator
 Simulador de sinuca em Python com PyGame
 
 ## Como jogar
@@ -8,25 +8,29 @@ Simulador de sinuca em Python com PyGame
 - Solte para bater o taco;
 
 ## Conceitos físicos
-O simulador de sinuca utiliza diversas noções de cinemática e dinâmica para realizar os cálculos das
-trajetórias, colisões, transferências de momento, etc. Vejamos rapidamente algumas noções necessárias para compreender como a simulação funciona.
-- **Momento**: Descreve a quantidade de movimento de um corpo. É uma função da massa e da velocidade, sendo dado por $\vec{p} = m \cdot \vec{v}$. Onde:
-  - $\vec{p}$ é o momento linear (um vetor);
+O simulador de sinuca utiliza diversas noções de cinemática e dinâmica para realizar os cálculos das trajetórias, colisões, transferências de momento, etc. Vejamos rapidamente algumas noções necessárias para compreender como a simulação funciona.
+
+## Momento Linear
+O momento linear, ou quantidade de movimento de um corpo é uma função da massa e da velocidade, sendo dado por $\vec{p} = m \cdot \vec{v}$. Onde:
+  - $\vec{p}$ é o momento linear;
   - $m$  é a massa do corpo;
-  - $\vec{v}$ é a velocidade do corpo (um vetor).
-- *adicionar mais noções básicas de física*
+  - $\vec{v}$ é a velocidade do corpo.
 
-### Conservação do Momento
-Em colisões elásticas (como na sinuca), o momento total do sistema é conservado, ou seja, a soma dos momentos de todas as bolas antes da colisão é igual à soma dos momentos após a colisão:
-
-$\sum \vec{p}_0 = \sum \vec{p}_1$,
-
-onde $\vec{p}_0$ é a velocidade antes da colisão, e $\vec{p}_1$ é a velocidade depois da colisão.
-
-Esse princípio é utilizado para calcular as velocidades resultantes de cada bola após as colisões.
+Podemos tanto estudar um momento de um corpo quanto o momento de um sistema de corpos e, essa quantidade se torna interessante quando estudamos sua conservação ou variação.
 
 ## Forças e Aceleração
-Quando uma bola sofre uma colisão ou está sujeita ao atrito da mesa, uma força está sendo aplicada sobre ela. Segundo a Segunda Lei de Newton, a força resultante $\vec{F}$ é dada por:
+
+Podemos entender a força como a variação do momento pelo tempo, ou seja:
+
+$\vec{F} = \displaystyle\frac{d\vec{p}}{dt}$
+
+onde:
+- $\vec{F}$ é a força aplicada;
+- $\vec{p}$ é a o momento linear, que está sendo derivado em função do tempo.
+
+Isso já nos dá uma boa intuição: uma força externa altera o momento do sistema. Um bom exemplo de uma força seria o próprio taco de sinuca: a bola, geralmente parada, muda sua velocidade - e consequentemente seu momento linear - ao ser atingida com o taco. 
+
+Resolvendo a derivada acima, temos:
 
 $\vec{F} = m \cdot \vec{a}$ (para massas constantes),
 
@@ -34,12 +38,35 @@ onde:
 - $\vec{F}$ é a força aplicada;
 - $\vec{a}$ é a aceleração (variação de velocidade).
 
-O atrito da mesa age contra o movimento das bolas, diminuindo suas velocidades ao longo do tempo até que parem completamente.
+Uma força é uma interação que altera o vetor velocidade de um corpo e, dessa forma, pode ditar sua trajetória. De fato, existem chamadas equações diferenciais, que conseguem descrever trajetórias completamente utilizando as forças que atual em um corpo e suas condições iniciais. Uma equação diferencial não é nada mais uma equação que envolve derivadas.
 
-## Colisões e Transferência de Momento
-Quando duas bolas colidem, elas trocam de momento entre si. O ângulo da colisão diz como o momento vai ser distribuído entre elas.
+### Colisões e Transferência de Momento
 
-*explicar com mais detalhes*
+Como a força descreve a variação da quantidade de movimento do sistema, podemos pensar no que acontece quando não há força.
+
+Um sistema cheio de bolas a velocidade constante não varia sua quantidade de movimento e, portanto, não tem forças "externas" o influenciando.
+Mas e se duas dessas bolas colidirem? 
+
+Intuitivamente, imaginamos que as bolas mudam de direção, velocidade e, por fim, momento. Mas então houve alguma força agindo no sistema?
+
+A resposta é que sim. No curto intervalo da colisão, as bolas interajiram e alteraram o momento uma da outra. Se não houve nenhuma outra interação, podemos dizer que o momento igual é igual ao momento inicial (o momento se conserva):
+
+$\sum \vec{p}_{0} = \sum \vec{p}_1$,
+
+Por outro lado, o momento das duas bolas mudou, o que implica que as variações de momento se anulam:
+
+$m_1 (\vec{v_{1f}} - \vec{v_{1f}}) + m_2 (\vec{v_{2f}} - \vec{v_{2i}}) = 0$
+
+### Colisões e Transferência de Momento
+Já discutimos que forças podem descrever a trajetória de um corpo. Se você está familiar com calculo, você pode pensar sobre o que acontece quando se integra uma força por uma trajetória, já que os dois tem uma relação bem próxima.
+
+De forma resumida, integrar uma força sobre a trajetória que ela descreve nos dá a Energia Cinética, que depende apenas da massa do corpo e do quadrado da sua velocidade.
+
+Se fizermos o mesmo para qualquer trajetórias, temos a noção de Trabalho - um custo
+
+Notamos também que é possivel classificar as forças em conservativas e não conservativas, quando elas são conservativas podemos definir a Energia Potencial.
+
+Também poedmos dizer nesse caso que (Energia Mecanica)
 
 ## Integração de Verlet
 Para calcular a posição das bolas na mesa a cada instante de simulação, utilizamos um método numérico para resolver equações que envolvem a posição e a aceleração atual de cada corpo. Este método consiste em aproximar o resultado da chamada "equação diferencial" da posição do corpo. Essa equação pode ser resolvida por meios analíticos, ou numéricos, que são rapidamente computáveis e dão resultados aproximados.
