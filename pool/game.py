@@ -3,25 +3,25 @@ from pool.verlet import VerletObject
 import pygame as pg
 
 balls_pos = [
+	(825, 225),
 	(150, 125),
 	(750, 295),
 	(750, 155),
 	(750, 225),
 	(475, 225),
 	(150, 225),
-	(20,  225),
-	(825, 225)
+	(20,  225)
 ];
 
 balls_colors = [
+	(220, 220, 220),
 	(200, 0, 0),
 	(200, 200, 0),
 	(0, 200, 0),
 	(200, 100, 0),
 	(0, 0, 200),
 	(200, 100, 100),
-	(25, 25, 25),
-	(220, 220, 220)
+	(25, 25, 25)
 ];
 
 holes = [
@@ -52,6 +52,7 @@ class Game:
 		self.score1 = 0;
 		self.score2 = 0;
 		self.score_font = pg.font.SysFont(None, 50);
+		self.aiming = False;
 
 		# Create game balls
 		for i in range(0, 8):
@@ -76,16 +77,25 @@ class Game:
 	def tick(self):
 		balls = self.vl.objs;
 
+		# Rendering balls
 		for ball in balls:
 			self.ren.render_circle(ball.curr[0], ball.curr[1],
 			                       ball.radius, ball.color);
+
+		# Rendering walls
 		for wall in walls:
 			self.ren.render_rect(wall[0], wall[1], wall[2],
 			                     wall[3], (255, 255, 0));
 
+		# Rendering holes
 		for hole in holes:
 			self.ren.render_circle(hole[0], hole[1], hole[2],
 			                       (0, 0, 0));
 		
+		# Rendering cue
+		if self.aiming:
+			self.ren.render_cue(self.vl.objs[0].curr,
+			                    pg.mouse.get_pos(), 10,
+								self.vl.objs[0].radius);
 		self.draw_score();
 		self.vl.update();

@@ -77,16 +77,23 @@ class Window:
 
 		while not brk:
 			for e in pg.event.get():
-				if pause and e.type == pg.MOUSEBUTTONDOWN:
-					if self.buttons[0].hover:
-						pause = not pause;
-						continue;
-					if self.buttons[1].hover:
-						print("help");
-						continue;
-					if self.buttons[2].hover:
-						brk = True;
-						continue;
+				if e.type == pg.MOUSEBUTTONDOWN:
+					if pause:
+						if self.buttons[0].hover:
+							pause = not pause;
+							continue;
+						if self.buttons[1].hover:
+							print("help");
+							continue;
+						if self.buttons[2].hover:
+							brk = True;
+							continue;
+					else:
+						self.game.aiming = True;
+
+				if e.type == pg.MOUSEBUTTONUP:
+					if not pause:
+						self.game.aiming = False;
 
 				if e.type == pg.QUIT:
 					brk = True;
