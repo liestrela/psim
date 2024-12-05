@@ -1,6 +1,6 @@
 # Pool game
 from pool.verlet import VerletObject
-from math import exp, pi
+from math import exp, pi, isclose
 import pygame as pg
 from pygame.math import Vector2 as Vec2
 
@@ -55,6 +55,7 @@ class Game:
 		self.score = [0, 0];
 		self.score_font = pg.font.SysFont(None, 50);
 		self.aiming = False;
+		self.moving = False;
 		self.cue_force = 5;
 
 		# Create game balls
@@ -70,8 +71,10 @@ class Game:
 			self.vl.objs.append(vo);
 
 	def shoot_ball(self, power : float , direction):
-		self.vl.objs[0].prv = self.vl.objs[0].curr
-		self.vl.objs[0].curr += direction*power 
+		if self.moving: return;
+		self.vl.objs[0].prv = self.vl.objs[0].curr;
+		self.vl.objs[0].curr += direction*power;
+		self.moving = True;
 
 	def increase_force(self):
 		if (self.cue_force<10):
@@ -93,12 +96,8 @@ class Game:
 		pg.draw.line(surf, (100, 100, 100), (950, 0), (950, 450), 30);
 
 	def draw_score(self):
-		if self.player == 0:
-			color1 = (50, 50, 50);
-			color2 = (0, 0, 0);
-		else:
-			color1 = (0, 0, 0);
-			color2 = (50, 50, 50);
+		color1 = (0, 0, 0);
+		color2 = (0, 0, 0);
 
 		self.ren.render_text("Score 1: " + str(self.score[0]),
 							 self.score_font, color1,
@@ -138,22 +137,32 @@ class Game:
 								   (0, 0, 0));
 		
 		# Rendering cue
-		if self.aiming:
+		if self.aiming and not self.moving:
 			self.ren.render_cue(self.vl.objs[0].curr,
 								pg.mouse.get_pos(), 10,
 								self.vl.objs[0].radius);
-
-		# Check ball pocket
 		for ball in balls:
+			# Check ball pocket
 			for hole in holes:
 				dist = ball.curr.distance_to(Vec2(hole));
 				if dist < 30:
 					if (ball != balls[0]):
 						self.vl.objs.remove(ball);
-						self.score[self.player] += 1;
+						self.score[not self.player] += 1;
 					else:
 						ball.prev = Vec2(balls_pos[0]);
 						ball.curr = Vec2(balls_pos[0]);
+						self.player = not self.player;
+
+		all_stopped = True;
+		for ball in balls:
+			if ball.vel.length()>0.05:
+				all_stopped = False;
+				break;
+
+		if all_stopped and self.moving:
+			self.moving = False;
+			self.player = not self.player;
 
 		self.draw_hud();
 		self.vl.update();
