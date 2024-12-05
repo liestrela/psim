@@ -2,6 +2,7 @@
 from pool.verlet import VerletObject
 from math import exp, pi
 import pygame as pg
+from pygame.math import Vector2 as Vec2
 
 balls_pos = [
 	(825, 225), # White ball
@@ -26,12 +27,12 @@ balls_colors = [
 ];
 
 holes = [
-	(11, 11 , 30),
-	(939, 11, 30),
-	(11, 439, 30),
-	(939, 439, 30),
-	(475, 11, 30),
-	(475, 439, 30)
+	(11, 11),
+	(939, 11),
+	(11, 439),
+	(939, 439),
+	(475, 11),
+	(475, 439)
 ];
 
 walls = [
@@ -50,8 +51,8 @@ class Game:
 		self.ren = ren;
 		self.vl = vl;
 		self.brk = False;
-		self.score1 = 0;
-		self.score2 = 0;
+		self.player = 0;
+		self.score = [0, 0];
 		self.score_font = pg.font.SysFont(None, 50);
 		self.aiming = False;
 		self.cue_force = 5;
@@ -92,11 +93,18 @@ class Game:
 		pg.draw.line(surf, (100, 100, 100), (950, 0), (950, 450), 30);
 
 	def draw_score(self):
-		self.ren.render_text("Score 1: " + str(self.score1),
-							 self.score_font, (0, 0, 0),
+		if self.player == 0:
+			color1 = (50, 50, 50);
+			color2 = (0, 0, 0);
+		else:
+			color1 = (0, 0, 0);
+			color2 = (50, 50, 50);
+
+		self.ren.render_text("Score 1: " + str(self.score[0]),
+							 self.score_font, color1,
 							 (1200, 30), "right", "middle");
-		self.ren.render_text("Score 2: " + str(self.score1),
-							 self.score_font, (0, 0, 0),
+		self.ren.render_text("Score 2: " + str(self.score[1]),
+							 self.score_font, color2,
 							 (1200, 80), "right", "middle");
 
 	def draw_force_bar(self):
@@ -126,7 +134,7 @@ class Game:
 
 		# Rendering holes
 		for hole in holes:
-			self.ren.render_circle(hole[0], hole[1], hole[2],
+			self.ren.render_circle(hole[0], hole[1], 30,
 								   (0, 0, 0));
 		
 		# Rendering cue
@@ -134,6 +142,18 @@ class Game:
 			self.ren.render_cue(self.vl.objs[0].curr,
 								pg.mouse.get_pos(), 10,
 								self.vl.objs[0].radius);
+
+		# Check ball pocket
+		for ball in balls:
+			for hole in holes:
+				dist = ball.curr.distance_to(Vec2(hole));
+				if dist < 30:
+					if (ball != balls[0]):
+						self.vl.objs.remove(ball);
+						self.score[self.player] += 1;
+					else:
+						ball.prev = Vec2(balls_pos[0]);
+						ball.curr = Vec2(balls_pos[0]);
 
 		self.draw_hud();
 		self.vl.update();

@@ -101,7 +101,7 @@ class Window:
 				if e.type == pg.MOUSEBUTTONUP:
 					if not pause and not menu_click:
 						menu_click = not menu_click;
-						self.game.shoot_ball(10.0, pg.math.Vector2.normalize(e.pos - self.vl.objs[0].curr))
+						self.game.shoot_ball(self.game.cue_force, pg.math.Vector2.normalize(e.pos - self.vl.objs[0].curr))
 						self.game.aiming = False;
 
 					if pause and menu_click:
