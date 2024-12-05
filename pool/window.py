@@ -76,10 +76,19 @@ class Window:
 		surf = self.ren.surf;
 
 		while not brk:
+			# Force setup
+			if pg.key.get_pressed()[pg.K_w]:
+				self.game.increase_force();
+			if pg.key.get_pressed()[pg.K_s]:
+				self.game.decrease_force();
+
 			for e in pg.event.get():
 				if e.type == pg.MOUSEBUTTONDOWN:
 					if pause:
 						if self.buttons[0].hover:
+							if pause:
+								pg.display.set_caption(self.title);
+
 							pause = not pause;
 							continue;
 						if self.buttons[1].hover:
@@ -121,5 +130,5 @@ class Window:
 				self.clk.tick(60);
 				self.game.tick();
 
-			# update display
+			# Update display
 			pg.display.flip();

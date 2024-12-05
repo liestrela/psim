@@ -1,5 +1,8 @@
 import pygame as pg
+import pygame.gfxdraw as gfxdraw
 from math import sqrt
+from math import cos as mcos
+from math import sin as msin
 
 class Renderer:
 	def __init__(self, surf):
@@ -41,9 +44,31 @@ class Renderer:
 		         offset[1]+(sin*radius)+base[1]-(cos*width/2));
 		vtx_2 = (vtx_1[0]+(cos*(-cue_len)), vtx_1[1]+(sin*(-cue_len)));
 		vtx_3 = (vtx_2[0]-(sin*width), vtx_2[1]+(cos*width));
-		vtx_4 = (vtx_3[0]-(cos*cue_len), vtx_3[1]-(sin*cue_len));
+		vtx_4 = (vtx_3[0]-(cos*(-cue_len)), vtx_3[1]-(sin*(-cue_len)));
 
-		# what is this coord?
 		pg.draw.polygon(self.surf, (111, 78, 55),
 		                (vtx_1, vtx_2, vtx_3, vtx_4));
+	
+	def render_arc(self, x, y, r, th, start, stop, color):
+		p_outer  = [];
+		p_inner = [];
+		n = round(r*abs(stop-start)/20);
+
+		if n<2: n=2;
+
+		for i in range(n):
+			delta = i/(n-1);
+			phi_0 = start+(stop-start)*delta;
+			x_0 = round(x+r*mcos(phi_0));
+			y_0 = round(y+r*msin(phi_0));
+			p_outer.append([x_0, y_0]);
+
+			phi_1 = stop+(start-stop)*delta;
+			x_1 = round(x+(r-th)*mcos(phi_1));
+			y_1 = round(y+(r-th)*msin(phi_1));
+			p_inner.append([x_1, y_1]);
+
+		points = p_outer+p_inner;
+		gfxdraw.aapolygon(self.surf, points, color);
+		gfxdraw.filled_polygon(self.surf, points, color);
 
