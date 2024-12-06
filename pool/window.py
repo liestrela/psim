@@ -137,6 +137,10 @@ class Window:
 			else:
 				self.clk.tick(60);
 				self.game.tick();
+				if self.game.end:
+					self.vl = Verlet(self.w, self.h);
+					self.game = Game(self.w, self.h, self.ren, self.vl);
+					pause = True;
 
 			# Update display
 			pg.display.flip();
