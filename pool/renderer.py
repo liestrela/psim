@@ -71,4 +71,3 @@ class Renderer:
 		points = p_outer+p_inner;
 		gfxdraw.aapolygon(self.surf, points, color);
 		gfxdraw.filled_polygon(self.surf, points, color);
-
