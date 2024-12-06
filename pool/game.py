@@ -175,10 +175,9 @@ class Game:
 		ax[1].set(xlabel="Iteração", ylabel="Energia Cinética");
 		ax[1].legend();
 
-		plt.draw();
+		plt.waitforbuttonpress(0);
 		plt.show();
-		plt.ioff();
-		plt.show();
+		plt.close(fig);
 
 	def tick(self):
 		if (len(self.vl.objs) == 1):
