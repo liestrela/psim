@@ -7,6 +7,8 @@ Simulador de sinuca em Python com PyGame
 - Clique e arraste para controlar a direção do taco;
 - Solte para bater o taco;
 
+Você também pode pausar o jogo pressionando P e plotar alguns gráficos da simulação clicando em "Gráficos".
+
 ## Conceitos físicos
 O simulador de sinuca utiliza diversas noções de cinemática e dinâmica para realizar os cálculos das trajetórias, colisões, transferências de momento, etc. Vejamos rapidamente algumas noções necessárias para compreender como a simulação funciona.
 
@@ -55,7 +57,7 @@ Mas e se duas dessas bolas colidirem?
 
 Intuitivamente, imaginamos que as bolas mudam de direção, velocidade e, por fim, momento. Mas então houve alguma força agindo no sistema? 
 
-A resposta é que sim. No curto intervalo da colisão, as bolas interajiram e alteraram o momento uma da outra. Se não houve nenhuma outra interação, podemos dizer que o momento final igual é igual ao momento inicial (o momento se conserva):
+A resposta é que sim. No curto intervalo da colisão, as bolas interagiram e alteraram o momento uma da outra. Se não houve nenhuma outra interação, podemos dizer que o momento final igual é igual ao momento inicial (o momento se conserva):
 
 $$
 \begin{align}
@@ -233,5 +235,7 @@ Existem métodos alternativos ao Verlet para calcular os mesmos resultados, como
 * https://ekiefl.github.io/2020/04/24/pooltool-theory/
 * https://phet.colorado.edu/en/simulations/collision-lab
 * https://en.wikipedia.org/wiki/Momentum
+* https://en.wikipedia.org/wiki/Verlet_integration
+* https://www.algorithm-archive.org/contents/verlet_integration/verlet_integration.html
 
 Baseado nas notas de aula do professor Esmerindo.
