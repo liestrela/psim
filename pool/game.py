@@ -142,7 +142,7 @@ class Game:
 		self.ren.render_rect(45, 495, 460, 60, (0, 0, 0));
 		self.ren.render_rect(50, 500, 450, 50, (150, 150, 150));
 		self.ren.render_rect(50, 500, 450*((self.cue_force - self.cue_force_min)/self.cue_force_max), 50,
-							 (0.63*abs(self.cue_force-45)*(self.cue_force-5), 2.55*(self.cue_force-5)*abs(self.cue_force-25), 255-255*math.exp((self.cue_force-5)/20-1)));
+							 (0.63*abs(self.cue_force-45)*(self.cue_force-5), 2.55*(self.cue_force-5)*abs(self.cue_force-25), 255-255*exp((self.cue_force-5)/20-1)));
 
 	def draw_values(self):
 		self.ren.render_text("E.C.: " +
