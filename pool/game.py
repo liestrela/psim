@@ -91,8 +91,11 @@ class Game:
 		self.ended = False;
 		self.end = False
 		self.kin = 0;
+		self.kin2 = 0; # Last hit ball
 		self.vel = 0;
-		self.kins = list[numpy.floating]();
+		self.last_hit = None;
+		self.kins  = list[numpy.floating]();
+		self.kins2 = list[numpy.floating]();
 		self.vels = list[numpy.floating]();
 		self.disc_line = list[int]();
 		self.n_iter = 0;
@@ -153,11 +156,16 @@ class Game:
 		                     str(round(self.kin, 1)),
 							 self.score_font, (0, 0, 0),
 							 (1250, 130), "right", "middle");
-		
+
+		self.ren.render_text("E.C. acertada: " +
+		                     str(round(self.kin2, 1)),
+							 self.score_font, (0, 0, 0),
+							 (1250, 180), "right", "middle");
+
 		self.ren.render_text("Velocidade: " +
 		                     str(round(self.vel, 1)),
 							 self.score_font, (0, 0, 0),
-							 (1250, 180), "right", "middle");
+							 (1250, 230), "right", "middle");
 
 	def draw_hud(self):
 		self.draw_score();
@@ -172,7 +180,7 @@ class Game:
 		pg.time.delay(1500);
 
 	def plot(self):
-		fig, ax = plt.subplots(1, 2, figsize=(14, 6));
+		fig, ax = plt.subplots(1, 3, figsize=(14, 6));
 
 		ax[0].plot(self.disc_line, self.kins, color="blue",
 		           label="Energia Cinética");
@@ -185,6 +193,12 @@ class Game:
 		ax[1].set_title('Velocidade da bola branca');
 		ax[1].set(xlabel="Iteração", ylabel="Energia Cinética");
 		ax[1].legend();
+
+		ax[2].plot(self.disc_line, self.kins2, color="green",
+		           label="Energia Cinética");
+		ax[2].set_title('Energia Cinética da bola acertada');
+		ax[2].set(xlabel="Iteração", ylabel="Energia Cinética");
+		ax[2].legend();
 
 		plt.waitforbuttonpress(0);
 		plt.draw();
@@ -237,10 +251,22 @@ class Game:
 				self.moving = False;
 				self.player = not self.player;
 
-			self.kin = (balls[0].vel.length()**2)/2;
+			# Looks for colliding ball
+			for ball in balls:
+				if (ball == balls[0]): continue;
+				dist = (balls[0].curr-ball.curr).length();
+				if dist <= 2*ball.radius+1:
+					self.last_hit = ball;
+					break;
+
+			self.kin  = (balls[0].vel.length()**2)/2;
+
+			if self.last_hit:
+				self.kin2 = (self.last_hit.vel.length()**2)/2;
 			self.vel = balls[0].vel.length();
 
 			self.kins.append(self.kin);
+			self.kins2.append(self.kin2);
 			self.vels.append(self.vel);
 
 			self.disc_line.append(self.n_iter);
