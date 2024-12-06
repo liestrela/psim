@@ -184,7 +184,7 @@ class Game:
 
 	def tick(self):
 		if (len(self.vl.objs) == 1):
-			print("acabou: jogador " + str(int(not (self.player_score[0]  > self.player_score[1] ))+1) + " ganhou" )
+			print("acabou: jogador " + str(int(not (self.score[0]  > self.player_score[1] ))+1) + " ganhou" )
 			self.ended = True;
 			
 		balls = self.vl.objs;
