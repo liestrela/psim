@@ -1,13 +1,14 @@
 # Pool game
-from pool.verlet import VerletObject
+from pool.verlet import VerletObject # Método Verlet
 from math import exp, pi, isclose
 from pygame.math import Vector2 as Vec2
 from matplotlib import pyplot as plt
 import pygame as pg
 import numpy
 
+#Definição das coordenadas das bolas na mesa
 balls_pos = [
-	(825, 225), # White ball
+	(825, 225), # Bola branca
 	
 	(280, 225),
 	
@@ -31,8 +32,9 @@ balls_pos = [
 	
 ];
 
+#Definição das cores da bola na mesa
 balls_colors = [
-	(220, 220, 220), # White ball
+	(220, 220, 220), # Bola branca
 	
 	(200, 200, 0),
 	
@@ -55,6 +57,7 @@ balls_colors = [
 	(25, 25, 125)
 ];
 
+#Definição das coordenadas dos buracos na mesa
 holes = [
 	(11, 11),
 	(939, 11),
@@ -64,6 +67,7 @@ holes = [
 	(475, 439)
 ];
 
+#Definição das coordenadas e dimensões das paredes 
 walls = [
 	(40, 10, 410, 7),
 	(497, 10, 410, 7),
@@ -73,30 +77,31 @@ walls = [
 	(497, 430, 410, 7)
 ]; 
 
+# Mecânica do jogo
 class Game:
 	def __init__(self, w, h, ren, vl):
-		self.w = w;
-		self.h = h;
-		self.ren = ren;
-		self.vl = vl;
-		self.brk = False;
-		self.player = 0;
-		self.score = [0, 0];
+		self.w = w; # Largura da janela
+		self.h = h; # Altura da janela
+		self.ren = ren; # Renderizador
+		self.vl = vl; # Método Verlet
+		self.brk = False; # Break do jogo
+		self.player = 0; # Turno (0 ou 1)
+		self.score = [0, 0]; # Placares dos jogadores
 		self.score_font = pg.font.SysFont(None, 50);
-		self.aiming = False;
-		self.moving = False;
-		self.cue_force = 15;
-		self.cue_force_max = 25;
-		self.cue_force_min = 5;
-		self.ended = False
-		self.kin = 0;
-		self.vel = 0;
-		self.kins = list[numpy.floating]();
-		self.vels = list[numpy.floating]();
-		self.disc_line = list[int]();
-		self.n_iter = 0;
+		self.aiming = False; # Se o jogador está mirando
+		self.moving = False; # Se as bolas ainda estão em movimento
+		self.cue_force = 15; # Força inicial para tacada
+		self.cue_force_max = 25; # Força máxima da tacada
+		self.cue_force_min = 5; # Força miníma da tacada
+		self.ended = False # Se o jogo acabou
+		self.kin = 0; # Energia cinética da bola branca
+		self.vel = 0; # Velocidade da bola branca
+		self.kins = list[numpy.floating](); # Valores assumidos pela energia
+		self.vels = list[numpy.floating](); # Valores assumidos pela velocidade
+		self.disc_line = list[int](); # Iterações (tempo)
+		self.n_iter = 0; # Nº de iterações
 
-		# Create game balls
+		# Criação das bolas 
 		for i in range(len(balls_pos)):
 			vo = VerletObject();
 			vo.id = i+1;
@@ -109,20 +114,24 @@ class Game:
 			self.vl.objs.append(vo);
 
 	def shoot_ball(self, power : float , direction):
-		if self.moving: return;
+		# Dispara a bola branca
+		if self.moving: return; # Na condição de ela estar parada
 		self.vl.objs[0].prv = self.vl.objs[0].curr;
 		self.vl.objs[0].curr += direction*power;
-		self.moving = True;
+		self.moving = True; # Há movimento
 
 	def increase_force(self):
+		# Aumenta a força da tacada até o valor máximo
 		if (self.cue_force<self.cue_force_max):
 			self.cue_force += 0.25;
 
 	def decrease_force(self):
+		# Reduz a força da tacada até o valor mínimo
 		if (self.cue_force>self.cue_force_min):
 			self.cue_force -= 0.25;
 
 	def draw_table(self):
+		# Exibe a mesa e seus limites
 		surf = self.ren.surf;
 
 		pg.draw.line(surf, (255, 255, 255), (750, 0), (750, 450), 5);
@@ -134,20 +143,23 @@ class Game:
 		pg.draw.line(surf, (100, 100, 100), (950, 0), (950, 450), 30);
 
 	def draw_score(self):
-		self.ren.render_text("Score 1: " + str(self.score[0]),
+		# Exibe o placar dos jogadores
+		self.ren.render_text("Score 1: " + str(self.player_score[0]),
 							 self.score_font, (0, 0, 0),
 							 (1250, 30), "right", "middle");
-		self.ren.render_text("Score 2: " + str(self.score[1]),
+		self.ren.render_text("Score 2: " + str(self.player_score[1]),
 							 self.score_font, (0, 0, 0),
 							 (1250, 80), "right", "middle");
 
 	def draw_force_bar(self):
+		# Exibe uma barra que representa a força da tacada
 		self.ren.render_rect(45, 495, 460, 60, (0, 0, 0));
 		self.ren.render_rect(50, 500, 450, 50, (150, 150, 150));
 		self.ren.render_rect(50, 500, 450*((self.cue_force - self.cue_force_min)/(self.cue_force_max - self.cue_force_min)), 50,
 							 (1.0,1.0,200.0));
 
 	def draw_values(self):
+		# Exibe os valores da Energia Cinética e da Velocidade
 		self.ren.render_text("E.C.: " +
 		                     str(round(self.kin, 1)),
 							 self.score_font, (0, 0, 0),
@@ -159,11 +171,13 @@ class Game:
 							 (1250, 180), "right", "middle");
 
 	def draw_hud(self):
+		# Atualiza e exibe todos os valores da interface
 		self.draw_score();
 		self.draw_force_bar();
 		self.draw_values();
 
 	def plot(self):
+		# Plota os gráficos de energia cinética e velocidade
 		fig, ax = plt.subplots(1, 2, figsize=(14, 6));
 
 		ax[0].plot(self.disc_line, self.kins, color="blue",
@@ -183,60 +197,62 @@ class Game:
 		plt.close();
 
 	def tick(self):
-		if (len(self.vl.objs) == 1):
-			print("acabou: jogador " + str(int(not (self.score[0]  > self.player_score[1] ))+1) + " ganhou" )
+		# Conforme as iterações, atualiza o jogo
+		if (len(self.vl.objs) == 1): # Casos só reste a bola branca, ganha quem tiver mais pontos
+			print("acabou: jogador " + str(int(not (self.player_score[0]  > self.player_score[1] ))+1) + " ganhou" )
 			self.ended = True;
 			
 		balls = self.vl.objs;
 		self.vl.set_bounds(0, 950, 5, 440);
 		self.draw_table();
 
-		# Rendering holes
+		# Renderiza os buracos
 		for hole in holes:
 			self.ren.render_circle(hole[0], hole[1], 30,
 								   (0, 0, 0));
-
-		# Rendering balls
+		# Renderiza as bolas 
 		for ball in balls:
 			self.ren.render_circle(ball.curr[0], ball.curr[1],
 								   ball.radius, ball.color);
 
-		# Rendering cue
+		# Renderiza o taco
 		if self.aiming and not self.moving:
 			self.ren.render_cue(self.vl.objs[0].curr,
 								pg.mouse.get_pos(), 10,
 								self.vl.objs[0].radius);
 		for ball in balls:
-			# Check ball pocket
+			# Verifica se a bola caiu no buraco
 			for hole in holes:
 				dist = ball.curr.distance_to(Vec2(hole));
 				if dist < 30:
-					if (ball != balls[0]):
-						self.vl.objs.remove(ball);
-						self.score[not self.player] += 1;
+					if (ball != balls[0]): # Desde que ela seja branca
+						self.vl.objs.remove(ball); # É removida do jogo
+						self.score[not self.player] += 1; # E é atribuído um ponto ao jogador do turno
 					else:
-						ball.prev = Vec2(balls_pos[0]);
+						ball.prev = Vec2(balls_pos[0]); # Caso seja a bola branca, ela é retornada para sua posição original
 						ball.curr = Vec2(balls_pos[0]);
-						self.player = not self.player;
+						self.player = not self.player; # E o turno é passado
 
-		all_stopped = True;
+		all_stopped = True; 
+		# Verifica se ainda há movimento na mesa
 		for ball in balls:
 			if ball.vel.length()>0.05:
 				all_stopped = False;
 				break;
 
+		# Se não houver, registra isso e passsa o turno
 		if all_stopped and self.moving:
 			self.moving = False;
 			self.player = not self.player;
 
-		self.kin = (balls[0].vel.length()**2)/2;
-		self.vel = balls[0].vel.length();
+		self.kin = (balls[0].vel.length()**2)/2; # Cálculo da energia cinética
+		self.vel = balls[0].vel.length(); # Registro da velocidade
 
-		self.kins.append(self.kin);
-		self.vels.append(self.vel);
+		self.kins.append(self.kin);  # Guarda a energia cinética atual
+		self.vels.append(self.vel); # Guarda a velocidade
 
-		self.disc_line.append(self.n_iter);
-		self.n_iter += 1;
+		self.disc_line.append(self.n_iter); # Guarda a iteração atual (tempo)
+		self.n_iter += 1; # Incrementa o número de iterações
 
-		self.draw_hud();
-		self.vl.update();
+		self.draw_hud(); # Atualiza a interface
+		self.vl.update(); # Atualiza os elementos do Método Verlet
