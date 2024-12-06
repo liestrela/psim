@@ -45,7 +45,7 @@ class Window:
 		self.buttons = [
 			Button(0, "Jogar", (127, 200, 127), (200, 255, 200),
 				(def_btn_x, def_btn_y), (400, self.h/7)),
-			Button(1, "Ajuda", (200, 127, 127), (255, 200, 200),
+			Button(1, "Gráficos", (200, 127, 127), (255, 200, 200),
 				(def_btn_x, 3*def_btn_y), (400, self.h/7)),
 			Button(2, "Sair",  (127, 127, 200), (200, 200, 255),
 				(def_btn_x, 5*def_btn_y), (400, self.h/7))
@@ -89,7 +89,7 @@ class Window:
 						menu_click = True;
 
 						if self.buttons[1].hover:
-							print("help");
+							self.game.plot();
 							continue;
 						if self.buttons[2].hover:
 							brk = True;

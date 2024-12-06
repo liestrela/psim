@@ -2,6 +2,7 @@
 from pool.verlet import VerletObject
 from math import exp, pi, isclose
 from pygame.math import Vector2 as Vec2
+from matplotlib import pyplot as plt
 import pygame as pg
 import numpy
 
@@ -89,6 +90,8 @@ class Game:
 		self.vel = 0;
 		self.kins = list[numpy.floating]();
 		self.vels = list[numpy.floating]();
+		self.disc_line = list[int]();
+		self.n_iter = 0;
 
 		# Create game balls
 		for i in range(len(balls_pos)):
@@ -157,13 +160,30 @@ class Game:
 		self.draw_force_bar();
 		self.draw_values();
 
+	def plot(self):
+		fig, ax = plt.subplots(1, 2, figsize=(14, 6));
+
+		ax[0].plot(self.disc_line, self.kins, color="blue",
+		           label="Energia Cinética");
+		ax[0].set_title('Energia Cinética da bola branca');
+		ax[0].set(xlabel="Iteração", ylabel="Energia Cinética");
+		ax[0].legend();
+
+		ax[1].plot(self.disc_line, self.vels, color="green",
+		           label="Velocidade");
+		ax[1].set_title('Velocidade da bola branca');
+		ax[1].set(xlabel="Iteração", ylabel="Energia Cinética");
+		ax[1].legend();
+
+		plt.draw();
+		plt.show();
+		plt.ioff();
+		plt.show();
+
 	def tick(self):
-		#print(len(self.vl.objs))
 		if (len(self.vl.objs) == 1):
 			print("acabou: jogador " + str(int(not self.player)+1) + " ganhou" )
-			self.ended = True
-			
-			
+			self.ended = True;
 			
 		balls = self.vl.objs;
 		self.vl.set_bounds(0, 950, 5, 440);
@@ -209,6 +229,12 @@ class Game:
 
 		self.kin = (balls[0].vel.length()**2)/2;
 		self.vel = balls[0].vel.length();
+
+		self.kins.append(self.kin);
+		self.vels.append(self.vel);
+
+		self.disc_line.append(self.n_iter);
+		self.n_iter += 1;
 
 		self.draw_hud();
 		self.vl.update();
