@@ -144,8 +144,8 @@ class Game:
 	def draw_force_bar(self):
 		self.ren.render_rect(45, 495, 460, 60, (0, 0, 0));
 		self.ren.render_rect(50, 500, 450, 50, (150, 150, 150));
-		self.ren.render_rect(50, 500, 450*((self.cue_force - self.cue_force_min)/self.cue_force_max), 50,
-							 (1.0,1.0,1.0));
+		self.ren.render_rect(50, 500, 450*((self.cue_force - self.cue_force_min)/(self.cue_force_max - self.cue_force_min)), 50,
+							 (1.0,1.0,200.0));
 
 	def draw_values(self):
 		self.ren.render_text("E.C.: " +
@@ -185,7 +185,7 @@ class Game:
 
 	def tick(self):
 		if (len(self.vl.objs) == 1):
-			print("acabou: jogador " + str(int(not self.player)+1) + " ganhou" )
+			print("acabou: jogador " + str(int(not (self.player_score[0]  > self.player_score[1] ))+1) + " ganhou" )
 			self.ended = True;
 			
 		balls = self.vl.objs;
