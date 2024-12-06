@@ -88,10 +88,14 @@ class Game:
 		self.cue_force = 15;
 		self.cue_force_max = 25;
 		self.cue_force_min = 5;
-		self.ended = False
+		self.ended = False;
+		self.end = False
 		self.kin = 0;
+		self.kin2 = 0; # Last hit ball
 		self.vel = 0;
-		self.kins = list[numpy.floating]();
+		self.last_hit = None;
+		self.kins  = list[numpy.floating]();
+		self.kins2 = list[numpy.floating]();
 		self.vels = list[numpy.floating]();
 		self.disc_line = list[int]();
 		self.n_iter = 0;
@@ -152,19 +156,31 @@ class Game:
 		                     str(round(self.kin, 1)),
 							 self.score_font, (0, 0, 0),
 							 (1250, 130), "right", "middle");
-		
+
+		self.ren.render_text("E.C. acertada: " +
+		                     str(round(self.kin2, 1)),
+							 self.score_font, (0, 0, 0),
+							 (1250, 180), "right", "middle");
+
 		self.ren.render_text("Velocidade: " +
 		                     str(round(self.vel, 1)),
 							 self.score_font, (0, 0, 0),
-							 (1250, 180), "right", "middle");
+							 (1250, 230), "right", "middle");
 
 	def draw_hud(self):
 		self.draw_score();
 		self.draw_force_bar();
 		self.draw_values();
 
+	def draw_win(self):
+		msg = "Jogador " + str(int(not(self.score[0]>self.score[1]))+1) + " venceu!";
+		self.ren.render_text(msg, self.score_font, (0, 0, 0),
+		                     (self.w/2, self.h/2), "center", "middle");
+		pg.display.flip();
+		pg.time.delay(1500);
+
 	def plot(self):
-		fig, ax = plt.subplots(1, 2, figsize=(14, 6));
+		fig, ax = plt.subplots(1, 3, figsize=(14, 6));
 
 		ax[0].plot(self.disc_line, self.kins, color="blue",
 		           label="Energia Cinética");
@@ -178,65 +194,86 @@ class Game:
 		ax[1].set(xlabel="Iteração", ylabel="Energia Cinética");
 		ax[1].legend();
 
+		ax[2].plot(self.disc_line, self.kins2, color="green",
+		           label="Energia Cinética");
+		ax[2].set_title('Energia Cinética da bola acertada');
+		ax[2].set(xlabel="Iteração", ylabel="Energia Cinética");
+		ax[2].legend();
+
 		plt.waitforbuttonpress(0);
 		plt.draw();
 		plt.close();
 
 	def tick(self):
 		if (len(self.vl.objs) == 1):
-			print("acabou: jogador " + str(int(not (self.score[0]  > self.player_score[1] ))+1) + " ganhou" )
 			self.ended = True;
 			
-		balls = self.vl.objs;
-		self.vl.set_bounds(0, 950, 5, 440);
-		self.draw_table();
+		if not self.ended:
+			balls = self.vl.objs;
+			self.vl.set_bounds(0, 950, 5, 440);
+			self.draw_table();
 
-		# Rendering holes
-		for hole in holes:
-			self.ren.render_circle(hole[0], hole[1], 30,
-								   (0, 0, 0));
-
-		# Rendering balls
-		for ball in balls:
-			self.ren.render_circle(ball.curr[0], ball.curr[1],
-								   ball.radius, ball.color);
-
-		# Rendering cue
-		if self.aiming and not self.moving:
-			self.ren.render_cue(self.vl.objs[0].curr,
-								pg.mouse.get_pos(), 10,
-								self.vl.objs[0].radius);
-		for ball in balls:
-			# Check ball pocket
+			# Rendering holes
 			for hole in holes:
-				dist = ball.curr.distance_to(Vec2(hole));
-				if dist < 30:
-					if (ball != balls[0]):
-						self.vl.objs.remove(ball);
-						self.score[not self.player] += 1;
-					else:
-						ball.prev = Vec2(balls_pos[0]);
-						ball.curr = Vec2(balls_pos[0]);
-						self.player = not self.player;
+				self.ren.render_circle(hole[0], hole[1], 30,
+									   (0, 0, 0));
 
-		all_stopped = True;
-		for ball in balls:
-			if ball.vel.length()>0.05:
-				all_stopped = False;
-				break;
+			# Rendering balls
+			for ball in balls:
+				self.ren.render_circle(ball.curr[0], ball.curr[1],
+									   ball.radius, ball.color);
 
-		if all_stopped and self.moving:
-			self.moving = False;
-			self.player = not self.player;
+			# Rendering cue
+			if self.aiming and not self.moving:
+				self.ren.render_cue(self.vl.objs[0].curr,
+									pg.mouse.get_pos(), 10,
+									self.vl.objs[0].radius);
+			for ball in balls:
+				# Check ball pocket
+				for hole in holes:
+					dist = ball.curr.distance_to(Vec2(hole));
+					if dist < 30:
+						if (ball != balls[0]):
+							self.vl.objs.remove(ball);
+							self.score[not self.player] += 1;
+						else:
+							ball.prev = Vec2(balls_pos[0]);
+							ball.curr = Vec2(balls_pos[0]);
+							self.player = not self.player;
 
-		self.kin = (balls[0].vel.length()**2)/2;
-		self.vel = balls[0].vel.length();
+			all_stopped = True;
+			for ball in balls:
+				if ball.vel.length()>0.05:
+					all_stopped = False;
+					break;
 
-		self.kins.append(self.kin);
-		self.vels.append(self.vel);
+			if all_stopped and self.moving:
+				self.moving = False;
+				self.player = not self.player;
 
-		self.disc_line.append(self.n_iter);
-		self.n_iter += 1;
+			# Looks for colliding ball
+			for ball in balls:
+				if (ball == balls[0]): continue;
+				dist = (balls[0].curr-ball.curr).length();
+				if dist <= 2*ball.radius+1:
+					self.last_hit = ball;
+					break;
 
-		self.draw_hud();
-		self.vl.update();
+			self.kin  = (balls[0].vel.length()**2)/2;
+
+			if self.last_hit:
+				self.kin2 = (self.last_hit.vel.length()**2)/2;
+			self.vel = balls[0].vel.length();
+
+			self.kins.append(self.kin);
+			self.kins2.append(self.kin2);
+			self.vels.append(self.vel);
+
+			self.disc_line.append(self.n_iter);
+			self.n_iter += 1;
+
+			self.draw_hud();
+			self.vl.update();
+		else:
+			self.draw_win();
+			self.end = True;
