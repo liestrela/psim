@@ -1,8 +1,9 @@
 # Pool game
 from pool.verlet import VerletObject
 from math import exp, pi, isclose
-import pygame as pg
 from pygame.math import Vector2 as Vec2
+import pygame as pg
+import numpy
 
 balls_pos = [
 	(825, 225), # White ball
@@ -84,6 +85,10 @@ class Game:
 		self.cue_force_max = 25;
 		self.cue_force_min = 5;
 		self.ended = False
+		self.kin = 0;
+		self.vel = 0;
+		self.kins = list[numpy.floating]();
+		self.vels = list[numpy.floating]();
 
 		# Create game balls
 		for i in range(len(balls_pos)):
@@ -123,15 +128,12 @@ class Game:
 		pg.draw.line(surf, (100, 100, 100), (950, 0), (950, 450), 30);
 
 	def draw_score(self):
-		color1 = (0, 0, 0);
-		color2 = (0, 0, 0);
-
 		self.ren.render_text("Score 1: " + str(self.score[0]),
-							 self.score_font, color1,
-							 (1200, 30), "right", "middle");
+							 self.score_font, (0, 0, 0),
+							 (1250, 30), "right", "middle");
 		self.ren.render_text("Score 2: " + str(self.score[1]),
-							 self.score_font, color2,
-							 (1200, 80), "right", "middle");
+							 self.score_font, (0, 0, 0),
+							 (1250, 80), "right", "middle");
 
 	def draw_force_bar(self):
 		self.ren.render_rect(45, 495, 460, 60, (0, 0, 0));
@@ -139,9 +141,21 @@ class Game:
 		self.ren.render_rect(50, 500, 450*((self.cue_force - self.cue_force_min)/self.cue_force_max), 50,
 							 (1.0,1.0,1.0));
 
+	def draw_values(self):
+		self.ren.render_text("E.C.: " +
+		                     str(round(self.kin, 1)),
+							 self.score_font, (0, 0, 0),
+							 (1250, 130), "right", "middle");
+		
+		self.ren.render_text("Velocidade: " +
+		                     str(round(self.vel, 1)),
+							 self.score_font, (0, 0, 0),
+							 (1250, 180), "right", "middle");
+
 	def draw_hud(self):
 		self.draw_score();
 		self.draw_force_bar();
+		self.draw_values();
 
 	def tick(self):
 		#print(len(self.vl.objs))
@@ -155,16 +169,16 @@ class Game:
 		self.vl.set_bounds(0, 950, 5, 440);
 		self.draw_table();
 
+		# Rendering holes
+		for hole in holes:
+			self.ren.render_circle(hole[0], hole[1], 30,
+								   (0, 0, 0));
+
 		# Rendering balls
 		for ball in balls:
 			self.ren.render_circle(ball.curr[0], ball.curr[1],
 								   ball.radius, ball.color);
 
-		# Rendering holes
-		for hole in holes:
-			self.ren.render_circle(hole[0], hole[1], 30,
-								   (0, 0, 0));
-		
 		# Rendering cue
 		if self.aiming and not self.moving:
 			self.ren.render_cue(self.vl.objs[0].curr,
@@ -192,6 +206,9 @@ class Game:
 		if all_stopped and self.moving:
 			self.moving = False;
 			self.player = not self.player;
+
+		self.kin = (balls[0].vel.length()**2)/2;
+		self.vel = balls[0].vel.length();
 
 		self.draw_hud();
 		self.vl.update();
