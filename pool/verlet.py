@@ -1,10 +1,12 @@
+# Método de Verlet
 from pygame.math import Vector2 as Vec2
 import math
 from random import randint as randi
 
-GRAVITY = 0.3;
+# Constante de atrito
 ATRITO = 0.02;
 
+# Objeto de simulação
 class VerletObject:
 	def __init__(self):
 		self.curr = Vec2(0,0);
@@ -24,49 +26,14 @@ class Verlet:
 		self.max_radius = 0;
 		self.objs = [];
 	
+	# Configura limites de simulação (paredes)
 	def set_bounds(self, w0, w1, h0, h1):
 		self.w0 = w0;
 		self.w1 = w1;
 		self.h0 = h0;
 		self.h1 = h1;
 	
-	# create n random objects
-	def create_objs(self, n, radius):
-		for i in range(0, n):
-			vo = VerletObject();
-			start_y = randi(10, self.h1-1);
-
-			vo.id = i;
-			vo.prev.update((self.max_radius*1.5*(i+1)-randi(0,14),
-						   start_y));
-			vo.curr.update((self.max_radius*1.5*(i+1), start_y,));
-
-			vo.acc.update(0, 0);
-			vo.radius = randi(2, radius);
-
-			vo.color = (randi(0, 0xff), randi(0, 0xff),
-						randi(0, 0xff));
-			
-			self.objs.append(vo);
-	
-	def create_obj_at(self, pos):
-		vo = VerletObject();
-
-		vo.id = len(self.objs)+1;
-		
-		vo.prev.update(pos);
-		vo.curr.update(pos);
-
-		vo.acc.update(0, 0);
-		vo.radius = randi(2, self.max_radius-1);
-
-		vo.color = (randi(0, 0xff), randi(0, 0xff), randi(0, 0xff));
-
-		self.objs.append(vo);
-	
-	def set_max_radius(self, max_radius):
-		self.max_radius = max_radius;
-
+	# Aplica as forças num objeto (atrito)
 	def apply_forces(self, obj):
 		vy=obj.curr[1]-obj.prev[1]
 		vx=obj.curr[0]-obj.prev[0]
@@ -82,7 +49,7 @@ class Verlet:
 		else:
 			obj.acc[0] = 0
 
-	
+	# Atualiza os atributos do objeto pelo método de Verlet
 	def update(self):
 		for obj in self.objs:
 			self.apply_forces(obj);
@@ -104,7 +71,9 @@ class Verlet:
 
 		self.keep_inbounds();
 	
+	# Calcula colisões
 	def check_collisions(self, obj):
+		# Constantes
 		particle_restitution = -0.98;
 		max_overlap_correction = 1000;
 		velocity_threshold = 0.2;
@@ -163,6 +132,7 @@ class Verlet:
 				obj.prev = obj.curr - new_obj_vel;
 				other.prev = other.curr - new_other_vel;
 
+	# Mantém os objetos dentro dos limites da tela
 	def keep_inbounds(self):
 		ground_res = 0.9;
 

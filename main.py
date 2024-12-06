@@ -2,7 +2,7 @@
 from pool.window import Window
 import sys
 
-# Default window resolution
+# Resolução padrão da janela
 W = 1300; # Definição da largura da janela
 H = 600; # Definição da altura da janela
 bg_color = (35, 125, 15); # Definição da cor de fundo

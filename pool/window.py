@@ -1,18 +1,21 @@
+# Janela Principal
 from pool.renderer import Renderer
 from pool.verlet   import Verlet
 from pool.game	   import Game
 import pygame as pg
 
+# Classe "botão" do menu
 class Button:
 	def __init__(self, idx, msg, color, color_hover, pos, dim):
 		self.idx = idx;
 		self.msg = msg;
 		self.color = color;
 		self.color_hover = color_hover;
-		self.hover = False;
+		self.hover = False; # Indica se o mouse está em cima do botão
 		self.pos = pos;
 		self.dim = dim;
 
+	# Verifica se o mouse está em cima do botão
 	def check_hover(self, w, h):
 		mouse_x = pg.mouse.get_pos()[0];
 		mouse_y = pg.mouse.get_pos()[1];
@@ -38,10 +41,11 @@ class Window:
 			pg.font.SysFont(None, 30, bold=True)
 		];
 
-		# Default button positions
+		# Posições padrão dos botões
 		def_btn_x = (self.w/2)-200;
 		def_btn_y = (self.h)/7;
 
+		# Definições dos botões
 		self.buttons = [
 			Button(0, "Jogar", (127, 200, 127), (200, 255, 200),
 				(def_btn_x, def_btn_y), (400, self.h/7)),
@@ -58,6 +62,7 @@ class Window:
 		self.vl = Verlet(w, h);
 		self.game = Game(w, h, self.ren, self.vl);
 
+	# Desenha os botões do menu na tela
 	def draw_buttons(self):
 		for btn in self.buttons:
 			color = btn.color_hover if btn.hover else btn.color;
@@ -70,6 +75,8 @@ class Window:
 								 (0, 0, 0), (self.w/2,
 								 (3+4*btn.idx)*(self.h/14)), "center",
 								 "middle");
+	
+	# Loop principal da janela
 	def loop(self):
 		brk = False;
 		pause = True;
@@ -77,12 +84,13 @@ class Window:
 		menu_click = False;
 
 		while not brk:
-			# Force setup
+			# Configuração da força do taco
 			if pg.key.get_pressed()[pg.K_w]:
 				self.game.increase_force();
 			if pg.key.get_pressed()[pg.K_s]:
 				self.game.decrease_force();
 
+			# Lidando com as entradas via teclado e mouse
 			for e in pg.event.get():
 				if e.type == pg.MOUSEBUTTONDOWN:
 					if pause:
@@ -128,6 +136,7 @@ class Window:
 			surf.fill(self.bgcolor);
 
 			if pause:
+				# Menu
 				pg.display.set_caption("Menu");
 
 				for btn in self.buttons:
@@ -135,6 +144,7 @@ class Window:
 
 				self.draw_buttons();
 			else:
+				# Jogo
 				self.clk.tick(60);
 				self.game.tick();
 				if self.game.end:
@@ -142,5 +152,5 @@ class Window:
 					self.game = Game(self.w, self.h, self.ren, self.vl);
 					pause = True;
 
-			# Update display
+			# Atualiza tela
 			pg.display.flip();
