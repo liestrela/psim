@@ -22,7 +22,11 @@ Podemos tanto estudar um momento de um corpo, quanto o momento de um sistema de 
 
 Podemos entender a força como a variação do momento pelo tempo, ou seja:
 
-$\begin{align} \vec{F} = \displaystyle\frac{d\vec{p}}{dt} \end{align}$
+$$
+\begin{align}
+  \vec{F} = \displaystyle\frac{d\vec{p}}{dt}
+\end{align}
+$$
 
 onde:
 - $\vec{F}$ é a força aplicada;
@@ -32,7 +36,12 @@ Isso já nos dá uma boa intuição: uma força externa altera o momento do sist
 
 Resolvendo a derivada acima, temos - para massas constantes:
 
-$\begin{align} \vec{F} = m \cdot \vec{a}\end{align}$ 
+$$
+\begin{align}
+  \vec{F} = m \cdot \vec{a}
+\end{align}
+$$
+
 onde:
 - $\vec{F}$ é a força aplicada;
 - $\vec{a}$ é a aceleração (variação de velocidade).
@@ -48,11 +57,19 @@ Intuitivamente, imaginamos que as bolas mudam de direção, velocidade e, por fi
 
 A resposta é que sim. No curto intervalo da colisão, as bolas interajiram e alteraram o momento uma da outra. Se não houve nenhuma outra interação, podemos dizer que o momento final igual é igual ao momento inicial (o momento se conserva):
 
-$\begin{align} \sum \vec{p}_{0} = \sum \vec{p}_f \end{align}$,
+$$
+\begin{align}
+  \sum \vec{p}_{0} = \sum \vec{p}_f,
+\end{align}
+$$
 
 Por outro lado, o momento das duas bolas mudou, o que implica que as variações de momento se anulam:
 
-$ \begin{align} m_1 (\vec{v_{1f}} - \vec{v_{1f}}) + m_2 (\vec{v_{2f}} - \vec{v_{2i}}) = 0 \end{align} $
+$$
+\begin{align}
+  m_1 (\vec{v_{1f}} - \vec{v_{1f}}) + m_2 (\vec{v_{2f}} - \vec{v_{2i}}) = 0
+\end{align}
+$$
 
 ## Energia
 Já discutimos que forças podem descrever a trajetória de um corpo. Se você está familiar com cálculo, você pode pensar sobre o que acontece quando se integra uma força por uma trajetória, já que os dois tem uma relação bem próxima.
@@ -61,7 +78,11 @@ Já discutimos que forças podem descrever a trajetória de um corpo. Se você e
 
 Integrar uma força sobre a trajetória que ela descreve nos dá a Energia Cinética, que depende apenas da massa do corpo e do quadrado da sua velocidade.
 
-$ \begin{align} E_c = \displaystyle \frac{mv^2}{2} \end{align} $
+$$
+\begin{align}
+  E_c = \displaystyle \frac{mv^2}{2}
+\end{align}
+$$
 
 Se fizermos o mesmo para qualquer trajetórias, temos a noção de Trabalho - que podemos interpretar como um "custo" do movimento.
 
@@ -90,7 +111,12 @@ Adicionar o atrito tornou nosso sistema não conservativo, ou seja, se a bola vi
 
 Podemos calcular o atrito da seguinte forma:
 
-$\begin{align} \vec{F_{at}} = -\hat{v} \cdot |\mu m g| \end{align} $
+$$
+\begin{align}
+  \vec{F_{at}} = -\hat{v} \cdot |\mu m g|
+\end{align}
+$$
+
 onde:
 * $\mu $ é o coeficiente de atrito da superfície (a mesa)
 * $m$ é a massa do objeto (a bola)
@@ -99,9 +125,12 @@ onde:
 
 Juntando as constantes, podemos escrever a seguinte EDO a partir disso:
 
-$\begin{align} m \ddot r &= -\hat{\dot r} \cdot mA_t  \\
+$$
+\begin{align}
+m \ddot r &= -\hat{\dot r} \cdot mA_t  \\
                       \ddot r &= -A_t \hat{\dot r}
-\end{align} $
+\end{align}
+$$
 
 Podemos então calcular a aceleração das nossas bolas sabendo a direção de seu movimento e com uma constante.
 
@@ -129,22 +158,47 @@ Suponha que a bola branca chegue com uma velocidade $v_0$ em contato com a bola 
 
 Podemos modelar nossa colisão entre duas bolas considerando que a direção da bola 8 é mesma da diferença entre as posições dela e da bola branca:
 
-$ \begin{align} \vec{d} = \displaystyle \frac{r_b - r_8}{|r_b - r_8|} \end{align}$
+$$
+\begin{align} \vec{d} = \displaystyle \frac{r_b - r_8}{|r_b - r_8|}
+\end{align}
+$$
 
 Considerando que as bolas tem a mesma massa e que a energia e o momento do sistema se quase não se altera por esse momento:
 
-$ \begin{align} m\vec{v_0} &= m\vec{v_b} + m\vec{v_8} \\
-\vec{v_0} &= \vec{v_b} + \vec{v_8}  \end{align}$
+$$
+\begin{align}
+  m\vec{v_0} &= m\vec{v_b} + m\vec{v_8} \\
+  \vec{v_0} &= \vec{v_b} + \vec{v_8}
+\end{align}
+$$
 
 Sejam $E_{c_i}$ e $E_{c_f}$ as enegias inicial e final, vamos considerar também, que por esse breve momento da colisão, elas não mudam:
 
-$ \begin{align} E_{c_i} = E_{c_f} \end{align}$
-$ \begin{align} m {v_0}^2 = m {v_b}^2 + m {v_8}^2  \end{align}$
-$ \begin{align}  {v_0}^2 = {v_b}^2 + {v_8}^2  \end{align}$
+$$
+\begin{align}
+  E_{c_i} = E_{c_f}
+\end{align}
+$$
+
+$$
+\begin{align}
+  m {v_0}^2 = m {v_b}^2 + m {v_8}^2
+\end{align}
+$$
+
+$$
+\begin{align}
+  {v_0}^2 = {v_b}^2 + {v_8}^2
+\end{align}
+$$
 
 Juntando essas informações, temos:
 
-$ \begin{align}  {(v_b + v_8)}^2 = {v_b}^2 + {v_8}^2 \implies  \vec{v_b} \cdot \vec{v_8} = 0\end{align}$
+$$
+\begin{align}
+  {(v_b + v_8)}^2 = {v_b}^2 + {v_8}^2 \implies  \vec{v_b} \cdot \vec{v_8} = 0
+\end{align}
+$$
 
 As velocidades após a velocidade são perpendiculares. Além disso, como já sabemos a direção da bola 8, sabemos a direção das duas bolas agora. As intensidades vêm quando realizamos a decomoposição do vetor $\vec{v_0}$ em $\vec{v_b}$ e $\vec{v_8}$, sendo o seno e cosseno do vetor.
 
