@@ -172,15 +172,15 @@ class Game:
 		ax[0].set(xlabel="Iteração", ylabel="Energia Cinética");
 		ax[0].legend();
 
-		ax[1].plot(self.disc_line, self.vels, color="green",
+		ax[1].plot(self.disc_line, self.vels, color="red",
 		           label="Velocidade");
 		ax[1].set_title('Velocidade da bola branca');
 		ax[1].set(xlabel="Iteração", ylabel="Energia Cinética");
 		ax[1].legend();
 
 		plt.waitforbuttonpress(0);
-		plt.show();
-		plt.close(fig);
+		plt.draw();
+		plt.close();
 
 	def tick(self):
 		if (len(self.vl.objs) == 1):
