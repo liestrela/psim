@@ -111,10 +111,12 @@ class Verlet:
 		slow_collision_factor = 0.7;
 		damp_fac = 0.97;
 
+		# Checa as outras bolas e procura contato/overlapping
 		for other in self.objs:
 			if other.id == obj.id:
 				continue;
-
+	
+			# Calculando a direção ideal da bola acertada pela branca após colisao: a diferenca entre a posicao entre as duas bolas
 			delta = other.curr - obj.curr;
 			dist = delta.length();
 
@@ -124,13 +126,16 @@ class Verlet:
 				else:
 					normal = delta*0;
 
+				# As bolas estao ocupando o mesmo espaco devido a erros do Verlet e pelo fato do nosso tick nao ser "infinitesimal"
+				# Vamos tentar compensar isso movendo ambas as bolas na direcao que calculamos a cima para eliminar a sobreposicao
+				# Isso introduz um problema: as bolas ganharam uma velocidade devido a forma como o Verlet funciona
 				overlap = (obj.radius + other.radius) - dist;
-
 				correction = min(overlap, max_overlap_correction);
 
 				obj.curr -= normal * (correction * (other.radius / (obj.radius + other.radius)));
 				other.curr += normal * (correction * (obj.radius / (obj.radius + other.radius)));
 
+				# Calculamos as velocidades e checamos se elas estão se afastando
 				obj_vel = obj.curr - obj.prev;
 				other_vel = other.curr - other.prev;
 				rel_vel = other_vel - obj_vel;
@@ -140,6 +145,7 @@ class Verlet:
 				if velocity_along_normal > 0:
 					return;
 
+				# Caso algo de errado, tentamos compensar utilizando os fatores
 				if obj_vel.length() < velocity_threshold and other_vel.length() < velocity_threshold:
 					collision_response_factor = slow_collision_factor;
 				else:
