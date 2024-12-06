@@ -6,21 +6,45 @@ from pygame.math import Vector2 as Vec2
 
 balls_pos = [
 	(825, 225), # White ball
-	(150, 125),
-	(750, 295),
-	(750, 155),
-	(750, 225),
-	(475, 225),
-	(150, 225),
-	(20,  225)
+	
+	(182, 295),
+	
+	(195, 260),
+	(160, 260),
+	
+	(217.5, 225),
+	(182.5, 225),
+	(147.5, 225),
+	
+	(230, 190),
+	(195,  190),
+	(160, 190),
+	(125, 190),
+
+	(252.5, 155),
+	(217.5, 155),
+	(182.5,  155),
+	(147.5, 155),
+	(112.5, 155)
+	
 ];
 
 balls_colors = [
 	(220, 220, 220), # White ball
+	
+	(200, 0, 0),
+	(200, 200, 0),
+	(0, 200, 0),
+	
 	(200, 0, 0),
 	(200, 200, 0),
 	(0, 200, 0),
 	(200, 100, 0),
+	(0, 0, 200),
+	(200, 100, 100),
+	(25, 25, 25),
+	(0, 0, 200),
+	(200, 100, 100),
 	(0, 0, 200),
 	(200, 100, 100),
 	(25, 25, 25)
@@ -56,10 +80,13 @@ class Game:
 		self.score_font = pg.font.SysFont(None, 50);
 		self.aiming = False;
 		self.moving = False;
-		self.cue_force = 5;
+		self.cue_force = 15;
+		self.cue_force_max = 25;
+		self.cue_force_min = 5;
+		self.ended = False
 
 		# Create game balls
-		for i in range(0, 8):
+		for i in range(len(balls_pos)):
 			vo = VerletObject();
 			vo.id = i+1;
 			vo.prev.update(balls_pos[i]);
@@ -77,11 +104,11 @@ class Game:
 		self.moving = True;
 
 	def increase_force(self):
-		if (self.cue_force<10):
+		if (self.cue_force<self.cue_force_max):
 			self.cue_force += 0.25;
 
 	def decrease_force(self):
-		if (self.cue_force>1):
+		if (self.cue_force>self.cue_force_min):
 			self.cue_force -= 0.25;
 
 	def draw_table(self):
@@ -109,20 +136,22 @@ class Game:
 	def draw_force_bar(self):
 		self.ren.render_rect(45, 495, 460, 60, (0, 0, 0));
 		self.ren.render_rect(50, 500, 450, 50, (150, 150, 150));
-		self.ren.render_rect(50, 500, 45*self.cue_force, 50,
-							 (2.25*abs(self.cue_force-20)*
-							 self.cue_force,
-							 10.2*self.cue_force*
-							 abs(self.cue_force-10),
-							 255-255*exp(self.cue_force/10-1)));
+		self.ren.render_rect(50, 500, 450*((self.cue_force - self.cue_force_min)/self.cue_force_max), 50,
+							 (1.0,1.0,1.0));
 
 	def draw_hud(self):
 		self.draw_score();
 		self.draw_force_bar();
 
 	def tick(self):
+		#print(len(self.vl.objs))
+		if (len(self.vl.objs) == 1):
+			print("acabou: jogador " + str(int(not self.player)+1) + " ganhou" )
+			self.ended = True
+			
+			
+			
 		balls = self.vl.objs;
-
 		self.vl.set_bounds(0, 950, 5, 440);
 		self.draw_table();
 

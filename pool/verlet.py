@@ -90,8 +90,12 @@ class Verlet:
 		for obj in self.objs:
 			self.check_collisions(obj);
 
+			velocity_prev = obj.vel = obj.curr-obj.prev
 			velocity = (obj.curr-obj.prev)+obj.acc;
 			obj.vel = velocity
+			
+			if (velocity_prev * velocity < 0):
+				velocity = Vec2(0, 0);
 
 			obj.prev.x = obj.curr.x;
 			obj.prev.y = obj.curr.y;
@@ -101,7 +105,7 @@ class Verlet:
 		self.keep_inbounds();
 	
 	def check_collisions(self, obj):
-		particle_restitution = -0.9;
+		particle_restitution = -0.98;
 		max_overlap_correction = 1000;
 		velocity_threshold = 0.2;
 		slow_collision_factor = 0.7;
