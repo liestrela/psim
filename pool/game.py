@@ -1,14 +1,14 @@
 # Jogo Principal - Sinuca
-from pool.verlet import VerletObject
+from pool.verlet import VerletObject # Objeto (bola) da simulação
 from math import exp, pi, isclose
-from pygame.math import Vector2 as Vec2
+from pygame.math import Vector2 as Vec2 # Vetores bidimensionais
 from matplotlib import pyplot as plt
 import pygame as pg
 import numpy
 
 # Posições das bolas do jogo
 balls_pos = [
-	(825, 225), # White ball
+	(825, 225), # Bola branca
 	(280, 225), (250, 210), (250, 240),
 	(220, 190), (220, 225),	(220, 260),
 	(190, 180),	(190, 210), (190, 240),
@@ -18,7 +18,7 @@ balls_pos = [
 
 # Cores das bolas do jogo RGB
 balls_colors = [
-	(220, 220, 220), # White ball
+	(220, 220, 220), # Bola branca
 	(200, 200, 0), (200, 0, 0), (200, 135, 0),
 	(0, 0, 200), (0, 0, 0), (119, 160, 200),
 	(200, 180, 0), (200, 0, 100), (45, 180, 50),
@@ -48,6 +48,10 @@ walls = [
 
 class Game:
 	def __init__(self, w, h, ren, vl):
+	# Parâmetros:	w (float): largura da janela
+	#		h (float): altura da janela
+	#		ren: Renderizador
+	#		vl: Física implementada
 		self.w = w;
 		self.h = h;
 		self.ren = ren;
@@ -55,26 +59,26 @@ class Game:
 		self.brk = False;
 		self.player = 0; # Indica qual jogador está jogando
 		self.score = [0, 0]; # Pontuação dos jogadores
-		self.score_font = pg.font.SysFont(None, 50);
+		self.score_font = pg.font.SysFont(None, 50); # Fonte para as pontuações
 		self.aiming = False; # Indica que o jogador está mirando
 		self.moving = False; # Indica que existem bolas se movendo
 		self.cue_force = 15; # Força do taco
-		self.cue_force_max = 25;
-		self.cue_force_min = 5;
-		self.ended = False;
-		self.end = False
+		self.cue_force_max = 25; # Força máxima do taco
+		self.cue_force_min = 5; # Força mínima do taco
+		self.ended = False; # Indica que o jogo terminou
+		self.end = False # Flag para terminar do jogo
 
 		self.kin = 0; # Energia cinética da bola branca
 		self.kin2 = 0; # Energia cinética da última bola acertada
 		self.vel = 0; # Velocidade da bola branca
-		self.last_hit = None;
+		self.last_hit = None; # Última bola com que a branca colidiu
 
 		# Conjuntos de dados para plotagem dos gráficos
 		self.kins  = list[numpy.floating]();
 		self.kins2 = list[numpy.floating]();
 		self.vels = list[numpy.floating]();
 		self.disc_line = list[int]();
-		self.n_iter = 0;
+		self.n_iter = 0; # Iteração atual
 
 		# Cria as bolas do jogo
 		for i in range(len(balls_pos)):
@@ -90,7 +94,11 @@ class Game:
 
 	# Acerta a bola branca com uma intensidade dada
 	def shoot_ball(self, power : float , direction):
-		if self.moving: return;
+	# Parâmetros:	power (float): intensidade da força
+	#		direction (vec2): vetor normalizado da direção
+		
+		# Desde que não haja bolas em movimento
+		if self.moving: return; 
 		self.vl.objs[0].prv = self.vl.objs[0].curr;
 		self.vl.objs[0].curr += direction*power;
 		self.moving = True;
@@ -192,9 +200,10 @@ class Game:
 
 	# Iteração da simulação
 	def tick(self):
+		# Se apenas restar a bola branca, o jogo acaba
 		if (len(self.vl.objs) == 1):
 			self.ended = True;
-			
+
 		if not self.ended:
 			balls = self.vl.objs;
 			self.vl.set_bounds(0, 950, 5, 440);
