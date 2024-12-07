@@ -1,5 +1,5 @@
 # Método de Verlet
-from pygame.math import Vector2 as Vec2
+from pygame.math import Vector2 as Vec2 # Vetores bidimensionais
 import math
 from random import randint as randi
 
