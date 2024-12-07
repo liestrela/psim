@@ -176,18 +176,21 @@ class Game:
 	def plot(self):
 		fig, ax = plt.subplots(1, 3, figsize=(14, 6));
 
+		# Energia cinética da bola branca
 		ax[0].plot(self.disc_line, self.kins, color="blue",
 		           label="Energia Cinética");
 		ax[0].set_title('Energia Cinética da bola branca');
 		ax[0].set(xlabel="Iteração", ylabel="Energia Cinética");
 		ax[0].legend();
 
+		# Velocidade da bola branca
 		ax[1].plot(self.disc_line, self.vels, color="red",
 		           label="Velocidade");
 		ax[1].set_title('Velocidade da bola branca');
 		ax[1].set(xlabel="Iteração", ylabel="Energia Cinética");
 		ax[1].legend();
 
+		# Energia cinética da última bola atingida
 		ax[2].plot(self.disc_line, self.kins2, color="green",
 		           label="Energia Cinética");
 		ax[2].set_title('Energia Cinética da bola acertada');
@@ -204,10 +207,11 @@ class Game:
 		if (len(self.vl.objs) == 1):
 			self.ended = True;
 
+		# Se o jogo não acabou, atualiza a simulação.
 		if not self.ended:
-			balls = self.vl.objs;
-			self.vl.set_bounds(0, 950, 5, 440);
-			self.draw_table();
+			balls = self.vl.objs; # Bolas do jogo
+			self.vl.set_bounds(0, 950, 5, 440); # Limites da mesa
+			self.draw_table(); # Exibição da mesa
 
 			# Renderizando caçapas
 			for hole in holes:
@@ -230,13 +234,13 @@ class Game:
 				for hole in holes:
 					dist = ball.curr.distance_to(Vec2(hole));
 					if dist < 30:
-						if (ball != balls[0]):
-							self.vl.objs.remove(ball);
-							self.score[not self.player] += 1;
+						if (ball != balls[0]):  # Desde que ela não seja branca
+							self.vl.objs.remove(ball); # É removida do jogo
+							self.score[not self.player] += 1; # E é somado um ponto ao score do jogador do turno
 						else:
-							ball.prev = Vec2(balls_pos[0]);
+							ball.prev = Vec2(balls_pos[0]); # Caso seja a bola branca, ela é retornada para sua posição original
 							ball.curr = Vec2(balls_pos[0]);
-							self.player = not self.player;
+							self.player = not self.player; # E o turno é passado
 
 			# Verifica se existem bolas se movendo
 			all_stopped = True;
@@ -244,7 +248,8 @@ class Game:
 				if ball.vel.length()>0.05:
 					all_stopped = False;
 					break;
-
+					
+			# Se não houver, registra isso e passsa o turno
 			if all_stopped and self.moving:
 				self.moving = False;
 				self.player = not self.player;
@@ -261,15 +266,15 @@ class Game:
 			self.kin  = (balls[0].vel.length()**2)/2;
 
 			if self.last_hit:
-				self.kin2 = (self.last_hit.vel.length()**2)/2;
-			self.vel = balls[0].vel.length();
+				self.kin2 = (self.last_hit.vel.length()**2)/2; # Cálculo da energia cinética
+			self.vel = balls[0].vel.length(); # Registro da velocidade
 
-			self.kins.append(self.kin);
-			self.kins2.append(self.kin2);
-			self.vels.append(self.vel);
+			self.kins.append(self.kin); # Guarda a energia cinética atual da bola branca (em cada iteração)
+			self.kins2.append(self.kin2); # Guarda a energia cinética atual da última bola com que a branca entrou em contato (em cada iteração)
+			self.vels.append(self.vel); # Guarda a velocidade atual da bola branca (em cada iteração)
 
-			self.disc_line.append(self.n_iter);
-			self.n_iter += 1;
+			self.disc_line.append(self.n_iter);  # Guarda a iteração atual (tempo)
+			self.n_iter += 1; # Incrementa o número de iterações
 
 			# Desenha o HUD
 			self.draw_hud();
@@ -277,5 +282,5 @@ class Game:
 			# Calcula as novas posições pelo método de Verlet
 			self.vl.update();
 		else:
-			self.draw_win();
-			self.end = True;
+			self.draw_win(); # Exibe mensagem de vitória
+			self.end = True; # Indica que o jogo acabou
